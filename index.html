@@ -1,0 +1,1806 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="When it hits the news, it burns. $BREAKING watches the world's news for twelve names and words and burns supply when coverage spikes.">
+<meta name="theme-color" content="#07080a">
+<meta property="og:title" content="BREAKING · When it hits the news, it burns.">
+<meta property="og:description" content="A live wire of twelve beats. When world news coverage of one spikes, $BREAKING buys back and burns. Bigger story, bigger burn.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="BREAKING · When it hits the news, it burns.">
+<meta name="twitter:image" content="/og.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='2' fill='%23ff2e1f'/%3E%3Ccircle cx='9.5' cy='10' r='3.2' fill='%23fff'/%3E%3Crect x='5' y='17.5' width='22' height='4.6' fill='%23fff'/%3E%3Crect x='5' y='23.8' width='14' height='2.8' fill='%23fff' fill-opacity='.62'/%3E%3C/svg%3E">
+<title>BREAKING</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders:opsz,wght@10..72,600..900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@1&display=swap">
+<style>
+/* Layout: a 24/7 news broadcast. The page runs as a rundown of segments; a live LED news globe is the studio set and travels between them; chyrons, slates and a ticker crawl carry the data. */
+:root{
+  --bg:#07080a;
+  --panel:#0d0f13;
+  --ink:#f1f2ef;
+  --ink-2:#a7abb1;
+  --ink-3:#686d74;
+  --line:rgba(241,242,239,.09);
+  --line-2:rgba(241,242,239,.2);
+  --on-ink:#090a0c;
+  --red:#ff2e1f;
+  --ember:#ff7a2e;
+  --amber:#ffb41f;
+  --cool:#c5cedc;
+  --display:"Big Shoulders","Big Shoulders Display","Bahnschrift Condensed","Avenir Next Condensed","DejaVu Sans Condensed","Arial Narrow",sans-serif;
+  --serif:"DM Serif Display","Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --text:"Schibsted Grotesk","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --mono:"Chivo Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --gutter:clamp(16px,4vw,56px);
+  --max:1360px;
+  --tk:40px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--text);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:hidden;padding-bottom:calc(var(--tk) + env(safe-area-inset-bottom,0px))}
+a{color:inherit;text-decoration:none}
+button,input{font:inherit;color:inherit}
+::selection{background:var(--red);color:#fff}
+:focus-visible{outline:1.5px solid var(--amber);outline-offset:3px}
+.wrap{max-width:var(--max);margin-inline:auto;padding-inline:var(--gutter);position:relative}
+.mono{font-family:var(--mono)}
+.label{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+.num{font-variant-numeric:tabular-nums}
+
+#stage{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;display:block}
+.grain{position:fixed;inset:-50%;z-index:1;pointer-events:none;opacity:.055;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+main,#end,.top{position:relative;z-index:2}
+body.no-gl{background:radial-gradient(ellipse 60% 50% at 70% 35%,#141821 0%,var(--bg) 70%) fixed}
+body.no-gl .anchor::after{content:"";position:absolute;inset:13%;border-radius:50%;background:radial-gradient(circle,rgba(241,242,239,.5) 1px,transparent 1.6px) 0 0/9px 9px,radial-gradient(circle at 35% 30%,#1b1f27,#08090b 70%);box-shadow:0 0 0 1px var(--line-2),0 0 80px rgba(197,206,220,.12)}
+
+/* stinger */
+.stinger{position:fixed;inset:0;z-index:90;pointer-events:none;overflow:hidden}
+.stinger i,.stinger b{position:absolute;left:0;right:0;top:50%;transform:translate(-101%,-50%)}
+.stinger i{height:min(26vh,210px);background:var(--ink);animation:sting .98s cubic-bezier(.75,0,.2,1) forwards}
+.stinger b{height:min(22vh,180px);background:var(--red);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:900;font-size:min(15vh,128px);letter-spacing:.08em;color:#fff;animation:sting .98s .07s cubic-bezier(.75,0,.2,1) forwards}
+@keyframes sting{0%{transform:translate(-101%,-50%)}40%{transform:translate(0,-50%)}60%{transform:translate(0,-50%)}100%{transform:translate(101%,-50%)}}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
+.top.scrolled{background:rgba(7,8,10,.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom-color:var(--line)}
+.nav{display:flex;align-items:center;gap:22px;height:64px}
+.brand{display:flex;align-items:center;gap:11px;font-family:var(--display);font-weight:800;font-size:25px;letter-spacing:.07em;line-height:1}
+.brand svg{width:28px;height:28px;flex:none}
+.onair{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-2);padding:6px 10px 6px 9px;border:1px solid var(--line-2);border-radius:2px;white-space:nowrap}
+.onair i{width:7px;height:7px;border-radius:50%;background:var(--ink-3)}
+.onair[data-m="live"]{border-color:rgba(255,46,31,.55);color:var(--ink)}
+.onair[data-m="live"] i{background:var(--red);box-shadow:0 0 10px var(--red);animation:tally 1.6s ease-in-out infinite}
+.onair[data-m="preview"]{border-color:rgba(255,180,31,.5);color:var(--amber)}
+.onair[data-m="preview"] i{background:var(--amber)}
+@keyframes tally{50%{opacity:.35}}
+.links{display:flex;gap:22px;margin-left:14px}
+.links a{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2);transition:color .15s}
+.links a:hover{color:var(--ink)}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:16px}
+.clock{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-family:var(--mono);font-size:11.5px;letter-spacing:.11em;text-transform:uppercase;padding:14px 20px;border-radius:2px;border:1px solid var(--line-2);color:var(--ink);background:transparent;cursor:pointer;transition:background .2s,border-color .2s,color .2s;white-space:nowrap}
+.btn:hover{border-color:rgba(241,242,239,.55)}
+.btn.primary{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.btn.primary:hover{background:#fff}
+.btn.small{padding:9px 14px;font-size:10.5px}
+.btn:disabled{opacity:.45;cursor:default}
+
+/* slate */
+.slate{display:flex;align-items:center;flex-wrap:wrap;gap:0;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)}
+.slate>span{padding:5px 10px;border:1px solid var(--line-2);border-left-width:0;line-height:1.2;white-space:nowrap}
+.slate>span:first-child{border-left-width:1px;background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.slate .tc{color:var(--ink-3);font-variant-numeric:tabular-nums}
+.slate .live{color:var(--red)}
+
+/* type */
+h1,h2{margin:0;font-family:var(--display);font-weight:800;text-transform:uppercase;text-wrap:balance}
+h1{font-size:clamp(58px,7.6vw,132px);line-height:.86;letter-spacing:-.005em}
+h1 span{display:block}
+h2{font-size:clamp(44px,5.4vw,92px);line-height:.88;letter-spacing:-.005em}
+h1 em,h2 em,.final em{font-family:var(--serif);font-style:italic;font-weight:400;text-transform:none;letter-spacing:-.015em;background:linear-gradient(95deg,var(--red) 10%,var(--ember) 90%);-webkit-background-clip:text;background-clip:text;color:transparent;padding-right:.08em}
+h1 em{font-size:1.04em}
+.sub,.seg-head p{margin:0;color:var(--ink-2);font-size:17px;max-width:34rem}
+
+/* hero */
+.hero{padding-block:clamp(14px,2.6vh,30px) clamp(26px,4vh,44px)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,.98fr) minmax(0,1.02fr);gap:0 clamp(24px,3vw,48px);align-items:center;position:relative}
+.hero-left{display:flex;flex-direction:column;gap:clamp(16px,2.4vh,24px);position:relative;z-index:3;padding-block:clamp(6px,1.5vh,18px)}
+.lede{font-size:clamp(16.5px,1.25vw,19px);line-height:1.55;color:var(--ink-2);max-width:35rem;margin:0}
+.lede strong{color:var(--ink);font-weight:500}
+.hero-right{position:relative;align-self:stretch;min-height:clamp(420px,58vh,620px)}
+.anchor{position:relative}
+#a-hero{position:absolute;left:50%;top:50%;width:min(80vh,52vw,780px);aspect-ratio:1;transform:translate(-50%,-50%);max-width:none}
+.frame{position:absolute;inset:3%;pointer-events:none}
+.frame i{position:absolute;width:26px;height:26px;border-color:rgba(241,242,239,.45);border-style:solid;border-width:0}
+.frame i:nth-child(1){left:0;top:0;border-left-width:1px;border-top-width:1px}
+.frame i:nth-child(2){right:0;top:0;border-right-width:1px;border-top-width:1px}
+.frame i:nth-child(3){left:0;bottom:0;border-left-width:1px;border-bottom-width:1px}
+.frame i:nth-child(4){right:0;bottom:0;border-right-width:1px;border-bottom-width:1px}
+.cl{position:absolute;display:flex;flex-direction:column;gap:3px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);transition:opacity .6s,transform .6s;max-width:42%}
+.cl b{font-family:var(--text);font-weight:500;font-size:14px;letter-spacing:0;text-transform:none;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cl.tl{left:calc(3% + 38px);top:calc(3% + 4px)}
+.cl.tr{right:calc(3% + 38px);top:calc(3% + 4px);text-align:right;align-items:flex-end}
+.cl.bl{left:calc(3% + 38px);bottom:calc(3% + 4px)}
+.cl.br{right:calc(3% + 38px);bottom:calc(3% + 4px);text-align:right;align-items:flex-end}
+.cl.dim{opacity:0;transform:translateY(6px)}
+.tool{display:flex;flex-direction:column;gap:10px;max-width:38rem}
+.field{display:flex;align-items:center;gap:8px;padding:5px 5px 5px 18px;border:1px solid var(--line-2);border-radius:2px;background:rgba(7,8,10,.6);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:border-color .2s}
+.field:focus-within{border-color:var(--ink)}
+.field::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 8px var(--red)}
+.field input{flex:1;min-width:0;background:transparent;border:0;outline:0;font-family:var(--mono);font-size:13.5px;letter-spacing:.02em;padding:10px 0}
+.field input::placeholder{color:var(--ink-3)}
+.try{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em}
+.try button{background:none;border:0;padding:0;cursor:pointer;color:var(--ink-2);border-bottom:1px solid var(--line-2);letter-spacing:.06em}
+.try button:hover{color:var(--ink);border-color:var(--ink)}
+.err{font-size:13.5px;color:#ffb3a3;margin:0}
+.buyrow{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch}
+.ca{display:flex;align-items:center;gap:12px;border:1px solid var(--line-2);border-radius:2px;padding:5px 5px 5px 16px;font-family:var(--mono);font-size:12px;background:rgba(7,8,10,.6);min-width:0}
+.buyrow .ca{flex:1 1 260px}
+.ca .k{letter-spacing:.12em;color:var(--ink-3)}
+.ca .v{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink-2);padding-block:8px}
+.ca .v.has{color:var(--ink)}
+
+/* chyron */
+.chyron{position:relative;z-index:4;display:grid;grid-template-columns:auto minmax(0,1fr) auto;margin-top:clamp(18px,2.6vh,30px);filter:drop-shadow(0 18px 40px rgba(0,0,0,.55))}
+.ch-tag{display:flex;align-items:center;padding:0 clamp(14px,2vw,26px);background:var(--ink);color:var(--on-ink);font-family:var(--display);font-weight:900;font-size:clamp(22px,2.5vw,40px);letter-spacing:.05em;text-transform:uppercase;line-height:1;white-space:nowrap;clip-path:inset(0 0 0 0)}
+.chyron[data-t="watch"] .ch-tag{background:var(--amber);color:#1a1200}
+.chyron[data-t="urgent"] .ch-tag,.chyron[data-t="bulletin"] .ch-tag,.chyron[data-t="flash"] .ch-tag{background:var(--red);color:#fff}
+.chyron[data-t="flash"] .ch-tag{animation:flashtag 1s steps(2,end) 3}
+@keyframes flashtag{50%{background:#fff;color:var(--red)}}
+.ch-main{display:flex;flex-direction:column;min-width:0}
+.ch-top{display:flex;align-items:center;gap:clamp(12px,1.6vw,22px);min-width:0;background:rgba(241,242,239,.97);color:var(--on-ink);padding:10px clamp(14px,1.6vw,22px) 9px;font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(26px,2.9vw,46px);line-height:1}
+.ch-top b{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.ch-top .ch-x{font-variant-numeric:tabular-nums;color:#5d6168;font-weight:700}
+.ch-top .ch-x.hot{color:var(--red)}
+.ch-top .tier-tag{margin-left:auto;font-size:10.5px;color:var(--on-ink);border-color:rgba(9,10,12,.3)}
+.ch-sub{display:flex;align-items:center;gap:12px;min-width:0;background:rgba(13,15,19,.94);border:1px solid var(--line);border-top:0;padding:8px clamp(14px,1.6vw,22px);font-size:14.5px;color:var(--ink-2);min-height:38px}
+.ch-sub span,.ch-sub a{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.ch-sub a:hover{color:var(--ink)}
+.ch-src{flex:none;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);padding:3px 7px;border:1px solid var(--line-2)}
+.ch-clock{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0 clamp(12px,1.4vw,20px);background:rgba(13,15,19,.94);border:1px solid var(--line);border-left:0;font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;color:var(--ink-3)}
+.ch-clock b{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:.02em;color:var(--ink);line-height:1;font-variant-numeric:tabular-nums}
+.chyron.swap .ch-tag{animation:wipe .5s cubic-bezier(.7,0,.2,1)}
+.chyron.swap .ch-top{animation:slidein .55s .08s cubic-bezier(.2,.8,.2,1) both}
+.chyron.swap .ch-sub{animation:slidein .55s .16s cubic-bezier(.2,.8,.2,1) both}
+.chyron.swap[data-t="flash"] .ch-tag{animation:wipe .5s cubic-bezier(.7,0,.2,1),flashtag 1s .5s steps(2,end) 3}
+@keyframes wipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes slidein{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+
+/* tier tags */
+.tier-tag{display:inline-flex;align-items:center;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:4px 8px;border:1px solid var(--line-2);color:var(--ink-2);border-radius:2px;white-space:nowrap;line-height:1.1}
+.tier-tag[data-t="watch"]{color:var(--amber);border-color:rgba(255,180,31,.55)}
+.tier-tag[data-t="urgent"]{color:#ff8a66;border-color:rgba(255,46,31,.6)}
+.tier-tag[data-t="bulletin"]{background:var(--red);border-color:var(--red);color:#fff}
+.tier-tag[data-t="flash"]{background:#fff;border-color:#fff;color:var(--red);box-shadow:0 0 0 2px var(--red)}
+.ch-top .tier-tag[data-t="bulletin"]{color:#fff;border-color:var(--red)}
+.ch-top .tier-tag[data-t="flash"]{color:#fff;background:var(--red);box-shadow:none}
+.ch-top .tier-tag[data-t="watch"]{color:#7a5300;border-color:rgba(122,83,0,.5)}
+.ch-top .tier-tag[data-t="urgent"]{color:#c4220f;border-color:rgba(196,34,15,.5)}
+
+/* segments */
+.seg{padding-block:clamp(96px,12vw,170px);scroll-margin-top:64px}
+.seg-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.7fr);gap:22px 64px;align-items:end;margin-bottom:clamp(36px,5vw,64px)}
+.seg-head .slate{grid-column:1/-1}
+.preview-note{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--amber);margin:0 0 18px}
+.preview-note::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--amber)}
+
+/* wire */
+.wire-grid{display:grid;grid-template-columns:minmax(0,.36fr) minmax(0,1fr);gap:clamp(20px,3vw,40px);align-items:start}
+.wire-side{position:sticky;top:84px;display:flex;flex-direction:column;gap:22px}
+#a-wire{width:100%;max-width:400px;aspect-ratio:1;margin-inline:auto}
+.legend{border-top:1px solid var(--line-2)}
+.legend div{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11.5px;color:var(--ink-2)}
+.legend div em{font-style:normal;color:var(--ink);text-align:right}
+.legend p{margin:12px 0 0;font-size:13px;color:var(--ink-3)}
+.wire-status{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--ink-3);display:flex;justify-content:space-between;gap:12px}
+.monitors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.mon{position:relative;display:flex;flex-direction:column;gap:6px;padding:14px 16px 13px;background:linear-gradient(180deg,rgba(19,21,26,.88),rgba(10,11,14,.9));border:1px solid var(--line);border-radius:3px;overflow:hidden;min-width:0;cursor:pointer;transition:border-color .25s,transform .25s,background .25s;color:var(--cool)}
+.mon::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:var(--line-2)}
+.mon:hover{border-color:var(--line-2);transform:translateY(-2px)}
+.mon header{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.mon .ch{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--ink-3)}
+.mon .name{font-family:var(--display);font-weight:800;font-size:clamp(22px,1.9vw,28px);line-height:1;text-transform:uppercase;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:6px}
+.mon .heat{display:flex;align-items:baseline;gap:2px;font-family:var(--display);font-weight:800;color:var(--ink);line-height:.9;font-variant-numeric:tabular-nums}
+.mon .heat .x{font-size:26px;color:var(--ink-3);font-weight:700}
+.mon .heat .v{font-size:clamp(48px,4.4vw,64px)}
+.mon .heat .dir{margin-left:10px;font-family:var(--mono);font-size:11px;font-weight:400;color:var(--ink-3);align-self:center}
+.mon .heat .dir.up{color:var(--ember)}
+.spark{display:block;width:100%;height:auto;overflow:visible}
+.spark .ar{fill:currentColor;fill-opacity:.12}
+.spark .ln{fill:none;stroke:currentColor;stroke-width:1.5;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.spark .bl{stroke:var(--line-2);stroke-dasharray:2 3;vector-effect:non-scaling-stroke}
+.spark .th{stroke:rgba(255,46,31,.45);stroke-dasharray:3 4;vector-effect:non-scaling-stroke}
+.spark .ep{fill:currentColor}
+.mon footer{display:flex;justify-content:space-between;gap:10px;font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.04em}
+.mon footer span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mon[data-t="watch"]{color:var(--amber)}
+.mon[data-t="watch"]::before{background:var(--amber)}
+.mon[data-t="urgent"],.mon[data-t="bulletin"],.mon[data-t="flash"]{color:var(--red);border-color:rgba(255,46,31,.42);background:linear-gradient(180deg,rgba(46,14,12,.82),rgba(14,9,10,.9))}
+.mon[data-t="urgent"]::before,.mon[data-t="bulletin"]::before,.mon[data-t="flash"]::before{background:var(--red);height:3px}
+.mon[data-t="flash"]::before{animation:tally 1s ease-in-out infinite}
+.mon[data-t="loading"] .heat .v,.mon[data-t="loading"] .name{opacity:.55}
+.mon[data-t="loading"] .spark{opacity:0}
+.mon .hint{position:absolute;right:14px;bottom:12px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);opacity:0;transition:opacity .2s}
+.mon:hover .hint{opacity:1}
+.mon:hover footer .f2{opacity:0}
+
+/* pinned: how it breaks */
+.pin{position:relative;scroll-margin-top:0}
+#how{height:360vh}
+.pin-inner{position:sticky;top:0;height:100vh;height:100svh;display:flex;flex-direction:column;padding-top:clamp(80px,10vh,108px);padding-bottom:calc(var(--tk) + clamp(16px,3vh,32px))}
+.how-grid{flex:1;display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:clamp(24px,4vw,72px);min-height:0}
+.how-left{display:flex;flex-direction:column;gap:clamp(14px,2.2vh,22px);min-width:0}
+.how-left h2{font-size:clamp(40px,4.6vw,78px)}
+.steps{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.steps li{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:2px 14px;align-items:baseline;padding:12px 0;border-bottom:1px solid var(--line);color:var(--ink-3);transition:color .3s}
+.steps .n{font-family:var(--mono);font-size:11px}
+.steps b{font-family:var(--display);font-weight:800;font-size:clamp(22px,2vw,30px);line-height:1;text-transform:uppercase;color:inherit}
+.steps .v{font-family:var(--mono);font-size:12px;text-align:right;font-variant-numeric:tabular-nums}
+.steps p{grid-column:2/-1;margin:0;font-size:14.5px;line-height:1.5;max-height:0;overflow:hidden;opacity:0;transition:max-height .4s,opacity .4s}
+.steps li.done{color:var(--ink-2)}
+.steps li.on{color:var(--ink)}
+.steps li.on .v{color:var(--red)}
+.steps li.on p{max-height:5em;opacity:1;color:var(--ink-2)}
+.illus{margin:0;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--ink-3)}
+.how-right{display:flex;flex-direction:column;gap:12px;min-width:0;min-height:0}
+.how-stage{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+#a-how{height:100%;max-height:min(58vh,580px);aspect-ratio:1;max-width:100%}
+.readout{position:absolute;left:0;top:0;display:flex;flex-direction:column;gap:6px;z-index:2}
+.ro-heat{display:flex;align-items:baseline;font-family:var(--display);font-weight:900;line-height:.85;font-variant-numeric:tabular-nums}
+.ro-heat .x{font-size:40px;color:var(--ink-3)}
+.ro-heat #ro-heat{font-size:clamp(64px,7vw,112px)}
+.ro-heat.hot{color:var(--red)}
+.ticket{position:absolute;right:0;top:0;z-index:2;display:flex;flex-direction:column;gap:6px;padding:12px 14px;border:1px solid var(--line-2);background:rgba(13,15,19,.86);font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--ink-2);min-width:200px;opacity:0;transform:translateY(8px);transition:opacity .35s,transform .35s}
+.ticket.on{opacity:1;transform:none}
+.ticket b{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:.02em;color:var(--ink);text-transform:uppercase}
+.ticket .row{display:flex;justify-content:space-between;gap:16px}
+.ticket .st{color:var(--ink)}
+.ticket .st.f{color:var(--red)}
+.how-chart{display:block;width:100%;height:auto;max-height:180px}
+.gl{stroke:var(--line);stroke-width:1}
+.gl.base{stroke:var(--line-2);stroke-dasharray:2 4}
+.gl.thr{stroke:rgba(255,46,31,.32);stroke-dasharray:3 5}
+.gl.thr[data-v="2"]{stroke:rgba(255,180,31,.32)}
+.gv{stroke:var(--line);stroke-width:1}
+.gt{fill:var(--ink-3);font-family:var(--mono);font-size:10px;letter-spacing:.06em}
+.chart .ar{fill:url(#heatfill);opacity:.9}
+.chart .ln{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-linejoin:round}
+.chart .pk{fill:var(--red)}
+.chart .pt{fill:var(--ink);font-family:var(--mono);font-size:11px}
+.chart .ph{fill:var(--red)}
+.slam{position:absolute;left:var(--gutter);right:var(--gutter);bottom:calc(var(--tk) + clamp(20px,4vh,40px));z-index:5;display:grid;grid-template-columns:auto minmax(0,1fr);pointer-events:none;transform:translateX(-110%);transition:transform .55s cubic-bezier(.7,0,.2,1);filter:drop-shadow(0 20px 40px rgba(0,0,0,.6))}
+.slam.on{transform:none}
+.slam-tag{display:flex;align-items:center;padding:0 22px;background:var(--red);color:#fff;font-family:var(--display);font-weight:900;font-size:clamp(24px,3vw,46px);letter-spacing:.05em}
+.slam-main{display:flex;flex-direction:column;min-width:0}
+.slam-main b{background:var(--ink);color:var(--on-ink);font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(26px,3.1vw,50px);line-height:1;padding:10px 20px 9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slam-main span{background:rgba(13,15,19,.95);border:1px solid var(--line);border-top:0;padding:8px 20px;font-size:14.5px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meter{height:1px;background:var(--line);position:relative;margin-top:14px}
+.meter i{position:absolute;left:0;top:0;height:1px;width:0;background:linear-gradient(90deg,var(--ink),var(--red))}
+
+/* heat check */
+.heat-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.7fr);gap:clamp(24px,4vw,64px);align-items:start}
+.heat-main{display:flex;flex-direction:column;gap:22px;min-width:0}
+.result{display:flex;flex-direction:column;gap:18px;padding:clamp(18px,2vw,26px);border:1px solid var(--line-2);border-radius:3px;background:rgba(10,11,14,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);min-width:0;position:relative;overflow:hidden}
+.result::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--line-2)}
+.result[data-t="watch"]::before{background:var(--amber)}
+.result[data-t="urgent"]::before,.result[data-t="bulletin"]::before,.result[data-t="flash"]::before{background:var(--red)}
+.rs-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.result h3{margin:0;font-family:var(--display);font-weight:900;text-transform:uppercase;font-size:clamp(40px,4.8vw,76px);line-height:.88;overflow-wrap:anywhere}
+.rs-stats{margin:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-block:1px solid var(--line)}
+.rs-stats div{padding:12px 0;display:flex;flex-direction:column;gap:4px;min-width:0}
+.rs-stats div+div{padding-left:16px;border-left:1px solid var(--line)}
+.rs-stats dt{font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+.rs-stats dd{margin:0;font-family:var(--display);font-weight:800;font-size:32px;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rs-stats small{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rs-chart{display:block;width:100%;height:auto}
+.heads{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.heads li{border-bottom:1px solid var(--line)}
+.heads a,.heads .empty{display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:14px;align-items:baseline;padding:10px 0;font-size:14.5px;color:var(--ink-2)}
+.heads a:hover .tt{color:var(--ink)}
+.heads .src{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.heads .tt{min-width:0;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.heads .ago{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);white-space:nowrap}
+.heads .empty{grid-template-columns:minmax(0,1fr);font-size:13.5px;color:var(--ink-3)}
+.rs-foot{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.rs-foot .label{margin-left:auto}
+.rs-load{display:flex;align-items:center;gap:12px;font-family:var(--mono);font-size:11.5px;color:var(--ink-2)}
+.rs-load i{width:120px;height:2px;background:var(--line);position:relative;overflow:hidden}
+.rs-load i::after{content:"";position:absolute;inset:0;width:40%;background:var(--red);animation:load 1.1s ease-in-out infinite}
+@keyframes load{from{transform:translateX(-100%)}to{transform:translateX(250%)}}
+.heat-side{display:flex;flex-direction:column;gap:18px;min-width:0;position:sticky;top:84px}
+#a-heat{width:100%;max-width:420px;aspect-ratio:1;margin-inline:auto}
+.cn-list{display:flex;flex-direction:column;gap:10px}
+.cn-list ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.cn-list li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;font-family:var(--mono);font-size:11.5px;color:var(--ink-2)}
+.cn-list li em{font-style:normal;color:var(--ink);font-variant-numeric:tabular-nums}
+.cn-list li i{grid-column:1/-1;height:2px;background:var(--line);position:relative}
+.cn-list li i::after{content:"";position:absolute;left:0;top:0;bottom:0;width:var(--w,0%);background:linear-gradient(90deg,var(--red),var(--ember))}
+.cn-list .none{font-family:var(--mono);font-size:11.5px;color:var(--ink-3)}
+
+/* record */
+.rec-grid{display:grid;grid-template-columns:minmax(0,.62fr) minmax(0,1.38fr);gap:clamp(24px,4vw,64px);align-items:start}
+.rec-left{display:flex;flex-direction:column;gap:24px;min-width:0}
+.rec-stats{margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--line-2)}
+.rec-stats div{padding:16px 0;display:flex;flex-direction:column;gap:6px;border-bottom:1px solid var(--line);min-width:0}
+.rec-stats div:nth-child(even){padding-left:18px;border-left:1px solid var(--line)}
+.rec-stats dt{font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+.rec-stats dd{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(34px,3.4vw,52px);line-height:.95;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rec-stats small{font-family:var(--mono);font-size:10.5px;color:var(--ink-3)}
+#a-rec{width:100%;max-width:400px;aspect-ratio:1;margin-inline:auto}
+.ledger{border:1px solid var(--line-2);border-radius:3px;background:rgba(10,11,14,.84);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);min-width:0;overflow:hidden}
+.lg-row{display:grid;grid-template-columns:118px minmax(0,1.2fr) 74px 108px 78px 104px;gap:12px;align-items:center;padding:13px 18px;border-bottom:1px solid var(--line);font-size:14.5px}
+.lg-row:last-child{border-bottom:0}
+.lg-head{font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3);background:rgba(241,242,239,.03)}
+.lg-row .c-t,.lg-row .c-p,.lg-row .c-s{font-family:var(--mono);font-size:12px;color:var(--ink-2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.lg-row .c-b{font-family:var(--display);font-weight:800;font-size:21px;text-transform:uppercase;line-height:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lg-row .c-p{color:var(--ink)}
+.st{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;padding:4px 8px;border-radius:2px;border:1px solid var(--line-2);color:var(--ink-2);white-space:nowrap}
+.st-bt{border-style:dashed;color:var(--ink-3)}
+.st-is{color:var(--ink);border-color:var(--ink)}
+.st-q{color:var(--amber);border-color:rgba(255,180,31,.5)}
+.st-f{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.st-f:hover{background:#fff}
+.lg-empty{padding:28px 18px;color:var(--ink-3);font-size:14.5px}
+.lg-note{margin:0;padding:14px 18px;font-size:13px;color:var(--ink-3);border-top:1px solid var(--line);background:rgba(241,242,239,.02)}
+.fills{display:flex;flex-wrap:wrap;gap:8px;padding:12px 18px;border-top:1px solid var(--line)}
+
+/* token */
+.token-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(24px,5vw,80px);align-items:center}
+.tok-left{display:flex;flex-direction:column;align-items:center;gap:16px}
+#a-tok{width:min(60vh,40vw,540px);aspect-ratio:1}
+.tok-right{display:flex;flex-direction:column;gap:24px;min-width:0}
+.facts{margin:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-block:1px solid var(--line)}
+.facts div{padding:14px 0;display:flex;flex-direction:column;gap:4px;min-width:0}
+.facts div+div{padding-left:16px;border-left:1px solid var(--line)}
+.facts dt{font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ink-3)}
+.facts dd{margin:0;font-family:var(--mono);font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sizes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.size{display:flex;flex-direction:column;gap:6px;padding:14px;border:1px solid var(--line);border-radius:3px;background:rgba(10,11,14,.6);min-width:0}
+.size .tier-tag{align-self:flex-start}
+.size b{font-family:var(--display);font-weight:900;font-size:clamp(34px,3.2vw,48px);line-height:.9;font-variant-numeric:tabular-nums}
+.size span{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--ink-3)}
+.size[data-t="bulletin"] b{color:var(--red)}
+.size[data-t="flash"]{border-color:rgba(255,46,31,.45);background:linear-gradient(180deg,rgba(46,14,12,.7),rgba(14,9,10,.7))}
+.size[data-t="flash"] b{color:#fff}
+.flow{display:flex;flex-direction:column;gap:12px}
+.flow-top{display:flex;align-items:baseline;gap:14px}
+.flow-top b{font-family:var(--display);font-weight:900;font-size:52px;line-height:.9}
+.stack{display:flex;height:6px;gap:3px}
+.stack i{display:block;height:100%;border-radius:1px}
+.rows{display:flex;flex-direction:column}
+.rows div{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:14px;align-items:baseline;padding:11px 0;border-top:1px solid var(--line)}
+.rows .sw{width:8px;height:8px;border-radius:1px;align-self:center}
+.rows b{font-weight:500;display:block}
+.rows span span{color:var(--ink-3);font-size:13.5px}
+.rows em{font-family:var(--mono);font-style:normal;font-size:14px}
+.road{margin-top:clamp(48px,6vw,80px);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line-2)}
+.road>div{padding:22px 28px 0 0;display:flex;flex-direction:column;gap:12px}
+.road>div+div{padding-left:28px;border-left:1px solid var(--line)}
+.road ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px;color:var(--ink-2);font-size:15px}
+.road li{display:flex;gap:10px}
+.road li::before{content:"";flex:none;width:12px;height:1px;background:var(--ink-3);margin-top:.8em}
+.road .label:first-child{color:var(--ink)}
+
+/* faq */
+.faq-grid{display:grid;grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);gap:56px;align-items:start}
+.faq{border-top:1px solid var(--line-2)}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:20px 0;font-family:var(--display);font-weight:800;text-transform:uppercase;font-size:clamp(21px,2vw,28px);line-height:1.05}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";font-family:var(--mono);font-size:18px;color:var(--ink-3);transition:transform .2s;flex:none}
+.faq details[open] summary::after{transform:rotate(45deg);color:var(--red)}
+.faq details p{margin:0 0 22px;color:var(--ink-2);max-width:44rem}
+
+/* footer */
+#end{padding-block:clamp(110px,15vw,200px) 40px;scroll-margin-top:64px}
+.end-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:24px;align-items:center}
+.final{margin:0 0 36px;font-family:var(--display);font-weight:900;text-transform:uppercase;font-size:clamp(64px,9.4vw,164px);line-height:.84;text-wrap:balance}
+#a-end{width:min(60vh,38vw,520px);aspect-ratio:1;justify-self:center}
+.foot{margin-top:96px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.04em;padding-top:20px;border-top:1px solid var(--line)}
+.copy-ok{border-color:var(--red)!important;color:var(--red)!important}
+
+/* ticker */
+.ticker{position:fixed;left:0;right:0;bottom:0;z-index:40;height:calc(var(--tk) + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);display:flex;align-items:stretch;background:rgba(7,8,10,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--line-2)}
+.tk-tag{flex:none;display:flex;align-items:center;padding:0 16px;background:var(--ink);color:var(--on-ink);font-family:var(--display);font-weight:900;font-size:19px;letter-spacing:.08em;line-height:1}
+.ticker[data-t="hot"] .tk-tag{background:var(--red);color:#fff}
+.tk-track{flex:1;min-width:0;overflow:hidden;position:relative;-webkit-mask-image:linear-gradient(90deg,transparent,#000 3%,#000 97%,transparent);mask-image:linear-gradient(90deg,transparent,#000 3%,#000 97%,transparent)}
+.tk-run{display:inline-flex;white-space:nowrap;align-items:center;height:100%;animation:crawl var(--dur,80s) linear infinite;will-change:transform}
+.tk-run>span{display:inline-flex;align-items:center;gap:8px;padding:0 20px;font-family:var(--mono);font-size:12px;letter-spacing:.05em;color:var(--ink-2);height:100%;border-right:1px solid var(--line)}
+.tk-run b{font-family:var(--display);font-weight:800;font-size:17px;letter-spacing:.04em;color:var(--ink);font-weight:800}
+.tk-run i{width:6px;height:6px;border-radius:50%;background:var(--ink-3)}
+.tk-run [data-t="watch"] i{background:var(--amber)}
+.tk-run [data-t="urgent"] i,.tk-run [data-t="bulletin"] i,.tk-run [data-t="flash"] i{background:var(--red);box-shadow:0 0 6px var(--red)}
+.tk-run .up{color:var(--ember)}
+.tk-run .hd{color:var(--ink)}
+.tk-run .hd em{font-style:normal;color:var(--ink-3);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase}
+.ticker:hover .tk-run{animation-play-state:paused}
+@keyframes crawl{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.tk-lamp{flex:none;display:flex;align-items:center;gap:8px;padding:0 14px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);border-left:1px solid var(--line);font-variant-numeric:tabular-nums}
+
+/* modal */
+.modal{position:fixed;inset:0;z-index:70;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(5,6,8,.8);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.modal-box{width:min(760px,100%);max-height:100%;overflow:auto;display:flex;flex-direction:column;gap:14px;padding:18px;background:#0d0f13;border:1px solid var(--line-2);border-radius:4px}
+.modal-box img{width:100%;display:block;border-radius:2px}
+.modal-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+
+@media (max-width:1180px){
+  .links{display:none}
+  .lg-row{grid-template-columns:104px minmax(0,1fr) 64px 100px 70px 96px;gap:10px;padding:12px 14px}
+}
+@media (max-width:1000px){
+  .monitors{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .faq-grid{grid-template-columns:minmax(0,1fr);gap:28px}
+}
+@media (max-width:900px){
+  .hero-grid,.seg-head,.wire-grid,.heat-grid,.rec-grid,.token-grid,.end-grid{grid-template-columns:minmax(0,1fr)}
+  .hero-grid{row-gap:16px}
+  .hero-left{display:contents}
+  .hero-left>.slate{order:1}.hero h1{order:2}.hero-right{order:3;min-height:0}.lede{order:4}#hero-form{order:5}.buyrow{order:6}
+  #a-hero{position:relative;left:auto;top:auto;transform:none;width:min(88vw,46vh);margin:0 auto}
+  .wire-side{position:static;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:20px;align-items:center}
+  .wire-status{grid-column:1/-1}
+  .heat-side{position:static;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:20px;align-items:center}
+  .rec-left{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);align-items:center}
+  #a-tok{width:min(80vw,440px)}
+  #a-end{width:min(72vw,420px);justify-self:start}
+  .how-grid{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:10px}
+  .how-right{order:-1}
+  .how-left h2{font-size:clamp(30px,8vw,48px)}
+  .how-left .slate,.illus{display:none}
+  .steps li{padding:8px 0}
+  .steps p{font-size:13.5px}
+  .how-stage{flex:none;height:30vh;height:30svh}
+  #a-how{height:100%;max-height:none}
+  .how-chart{max-height:110px}
+  .ro-heat #ro-heat{font-size:56px}
+  .ro-heat .x{font-size:28px}
+  .ticket{min-width:0;padding:9px 11px;font-size:10px}
+  .ticket b{font-size:17px}
+}
+@media (max-width:700px){
+  h1{font-size:clamp(50px,15vw,84px)}
+  .chyron{grid-template-columns:minmax(0,1fr);margin-top:6px}
+  .ch-tag{padding:8px 14px;font-size:22px;width:max-content}
+  .ch-clock{display:none}
+  .ch-top{font-size:26px;flex-wrap:nowrap}
+  .ch-sub{font-size:13px}
+  .cl b{font-size:12.5px}
+  .cl{font-size:9px}
+  .frame i{width:16px;height:16px}
+  .cl.tl,.cl.bl{left:calc(3% + 22px)}
+  .cl.tr,.cl.br{right:calc(3% + 22px)}
+  .monitors{grid-template-columns:minmax(0,1fr)}
+  .mon{display:grid;grid-template-columns:minmax(0,1fr) 128px;grid-template-areas:"h h" "n s" "x s" "f f";gap:4px 14px;align-items:center}
+  .mon header{grid-area:h}.mon .name{grid-area:n}.mon .heat{grid-area:x}.mon .spark{grid-area:s}.mon footer{grid-area:f}
+  .mon .heat .v{font-size:44px}
+  .wire-side{grid-template-columns:minmax(0,1fr)}
+  #a-wire{max-width:300px}
+  .heat-side{grid-template-columns:minmax(0,1fr)}
+  #a-heat{max-width:300px}
+  .rs-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .rs-stats div:nth-child(3){padding-left:0;border-left:0}
+  .rs-stats div:nth-child(n+3){border-top:1px solid var(--line)}
+  .heads a,.heads .empty{grid-template-columns:minmax(0,1fr) auto;gap:2px 12px}
+  .heads .src{grid-column:1/-1}
+  .rec-left{grid-template-columns:minmax(0,1fr)}
+  #a-rec{max-width:280px}
+  .lg-head{display:none}
+  .lg-row{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"b st" "t tier" "p s";gap:6px 12px;padding:14px}
+  .lg-row .c-b{grid-area:b}.lg-row .c-st{grid-area:st;justify-self:end}.lg-row .c-t{grid-area:t}.lg-row .c-tier{grid-area:tier;justify-self:end}.lg-row .c-p{grid-area:p}.lg-row .c-s{grid-area:s;justify-self:end}
+  .facts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .facts div:nth-child(3){padding-left:0;border-left:0}
+  .facts div:nth-child(n+3){border-top:1px solid var(--line)}
+  .sizes{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .size{padding:10px}
+  .size b{font-size:28px}
+  .road{grid-template-columns:minmax(0,1fr)}
+  .road>div+div{padding-left:0;border-left:0;border-top:1px solid var(--line);margin-top:22px}
+  #how{height:320vh}
+  .slam{grid-template-columns:minmax(0,1fr)}
+  .slam-tag{padding:8px 14px;width:max-content;font-size:22px}
+  .slam-main b{font-size:24px;padding:8px 14px}
+  .slam-main span{font-size:12.5px;padding:7px 14px}
+  .tk-lamp span{display:none}
+}
+@media (max-width:520px){
+  .nav{gap:12px}
+  .nav .btn,.clock{display:none}
+  .brand{font-size:22px}
+  .field{padding-left:14px}
+  .ca{flex-basis:100%}
+  .buyrow .btn{flex:1 1 100%}
+  .cl.tr,.cl.bl{display:none}
+  .tk-tag{font-size:16px;padding:0 12px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .tk-run{animation:none}
+  .tk-track{overflow-x:auto}
+  .steps p,.cl,.ticket,.slam,.mon{transition:none}
+  .chyron.swap .ch-tag,.chyron.swap .ch-top,.chyron.swap .ch-sub,.chyron[data-t="flash"] .ch-tag,.onair i,.mon::before{animation:none}
+  .stinger{display:none}
+}
+</style>
+
+</head>
+<body>
+<canvas id="stage" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+<div class="stinger" id="stinger" aria-hidden="true"><i></i><b>BREAKING</b></div>
+
+<header class="top" id="topbar">
+  <div class="wrap nav">
+    <a class="brand" href="#top" aria-label="BREAKING home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="2" fill="#ff2e1f"/><circle cx="9.5" cy="10" r="3.2" fill="#fff"/><rect x="5" y="17.5" width="22" height="4.6" fill="#fff"/><rect x="5" y="23.8" width="14" height="2.8" fill="#fff" fill-opacity=".62"/></svg>
+      BREAKING
+    </a>
+    <span class="onair" id="onair" data-m="connecting"><i></i><span id="onair-t">Tuning in</span></span>
+    <nav class="links" aria-label="Sections">
+      <a href="#wire">Wire</a><a href="#how">How it breaks</a><a href="#heat">Heat check</a><a href="#record">Record</a><a href="#token">Token</a><a href="#faq">FAQ</a>
+    </nav>
+    <div class="nav-right"><span class="clock" id="clock">--:--:-- UTC</span><a class="btn primary small" id="buy-nav" href="https://pump.fun" target="_blank" rel="noopener">Buy $BREAKING</a></div>
+  </div>
+</header>
+
+<main id="top">
+  <!-- SEG 01 · HERO -->
+  <section class="hero" data-scene="hero">
+    <div class="wrap">
+      <div class="hero-grid">
+        <div class="hero-left">
+          <div class="slate"><span>SEG 01</span><span class="live" id="seg-live">● Live</span><span>World news, every 15 min</span><span class="tc" data-tc>--:--:--:--</span></div>
+          <h1><span>When it hits</span><span>the news,</span><span>it <em>burns.</em></span></h1>
+          <p class="lede">$BREAKING watches the world’s news for twelve names and words. When coverage of one suddenly spikes, creator fees buy back $BREAKING and burn it. <strong>Bigger story, bigger burn.</strong></p>
+          <form class="tool" id="hero-form" novalidate>
+            <div class="field">
+              <input id="hero-q" type="text" autocomplete="off" spellcheck="false" maxlength="60" placeholder="Type any name or word" aria-label="Name or word to check">
+              <button class="btn primary small" type="submit">Check the heat</button>
+            </div>
+            <div class="try"><span>Try</span><button type="button" data-try="Taylor Swift">Taylor Swift</button><button type="button" data-try="Elon Musk">Elon Musk</button><button type="button" data-try="Federal Reserve">Federal Reserve</button><button type="button" data-try="Solana">Solana</button></div>
+          </form>
+          <div class="buyrow">
+            <a class="btn primary" id="buy-hero" href="https://pump.fun" target="_blank" rel="noopener">Buy $BREAKING ↗</a>
+            <div class="ca" id="ca-hero"><span class="k">CA</span><span class="v">Posted here and on X at launch</span><button class="btn small" type="button" hidden>Copy</button></div>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="anchor" id="a-hero">
+            <div class="frame" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+            <div class="cl tl dim"><span>Hottest beat</span><b id="cl-hot">Tuning in…</b></div>
+            <div class="cl tr dim"><span>Wire</span><b id="cl-wire">0 / 12 beats</b></div>
+            <div class="cl bl dim"><span>Covering it now</span><b id="cl-cn">—</b></div>
+            <div class="cl br dim"><span>Orders · 7 days</span><b id="cl-orders">—</b></div>
+          </div>
+        </div>
+      </div>
+      <div class="chyron" id="chyron" data-t="quiet" aria-live="polite">
+        <div class="ch-tag" id="ch-tag">Now watching</div>
+        <div class="ch-main">
+          <div class="ch-top"><b id="ch-beat">The world’s news</b><span class="ch-x" id="ch-x"></span><span class="tier-tag" id="ch-tier" data-t="quiet">Quiet</span></div>
+          <div class="ch-sub" id="ch-sub"><span>Tuning in to the wire. Twelve beats load one by one.</span></div>
+        </div>
+        <div class="ch-clock"><span>BRKG</span><b id="ch-time">--:--</b><span>UTC</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEG 02 · WIRE -->
+  <section class="seg" id="wire" data-scene="wire">
+    <div class="wrap">
+      <div class="seg-head">
+        <div class="slate"><span>SEG 02</span><span>The wire</span><span class="tc" data-tc>--:--:--:--</span></div>
+        <h2>Twelve beats. <em>Always on air.</em></h2>
+        <p>Each beat is a name or word the world’s news keeps coming back to. Every 15 minutes we read its share of all coverage and compare it with its own 7-day normal. That ratio is the heat.</p>
+      </div>
+      <p class="preview-note" id="wire-preview" hidden>Preview data. Live numbers load when the wire connects.</p>
+      <div class="wire-grid">
+        <aside class="wire-side">
+          <div class="anchor" id="a-wire"></div>
+          <div>
+            <div class="legend" id="legend"></div>
+          </div>
+          <div class="wire-status"><span id="ws-a">Wire 0 / 12</span><span id="ws-b">Updated --:-- UTC</span></div>
+        </aside>
+        <div class="monitors" id="monitors"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEG 03 · HOW IT BREAKS (pinned) -->
+  <section class="pin" id="how" data-scene="how">
+    <div class="pin-inner wrap">
+      <div class="how-grid">
+        <div class="how-left">
+          <div class="slate"><span>SEG 03</span><span>How it breaks</span><span class="tc" data-tc>--:--:--:--</span></div>
+          <h2>How a headline <em>becomes a burn.</em></h2>
+          <ol class="steps" id="steps">
+            <li><span class="n">01</span><b>Watch</b><span class="v">Every 15 min</span><p>The wire reads what share of the world’s news mentions each beat.</p></li>
+            <li><span class="n">02</span><b>Spike</b><span class="v" id="sv-heat">×1.0</span><p>Coverage jumps above its own 7-day normal. The ratio is the heat.</p></li>
+            <li><span class="n">03</span><b>Order</b><span class="v" id="sv-order">—</span><p>Crossing ×3 issues a burn order. The tier sets its size.</p></li>
+            <li><span class="n">04</span><b>Burn</b><span class="v" id="sv-burn">—</span><p>The burn wallet buys $BREAKING with creator fees, burns it and posts the transaction.</p></li>
+          </ol>
+          <p class="illus">Illustration of an example spike. Live numbers are on the wire.</p>
+        </div>
+        <div class="how-right">
+          <div class="how-stage">
+            <div class="readout">
+              <span class="label">Example beat · OpenAI</span>
+              <div class="ro-heat" id="ro-wrap"><span class="x">×</span><span id="ro-heat">1.0</span></div>
+              <span class="tier-tag" id="ro-tier" data-t="quiet">Quiet</span>
+            </div>
+            <div class="anchor" id="a-how"></div>
+            <div class="ticket" id="ticket" aria-live="polite">
+              <span class="label">Burn order · example</span>
+              <b id="tk-title">OpenAI</b>
+              <div class="row"><span>Tier</span><span id="tk-tier">—</span></div>
+              <div class="row"><span>Size</span><span id="tk-size">—</span></div>
+              <div class="row"><span>Status</span><span class="st" id="tk-status">Issued</span></div>
+            </div>
+          </div>
+          <svg class="how-chart chart" id="how-chart" viewBox="0 0 640 170" aria-label="Example spike chart"></svg>
+        </div>
+      </div>
+      <div class="slam" id="slam" aria-hidden="true">
+        <span class="slam-tag">BREAKING</span>
+        <span class="slam-main"><b>OpenAI · ×10.4 · Flash</b><span>1.0 SOL of $BREAKING bought back and burned · example</span></span>
+      </div>
+      <div class="meter"><i id="how-meter"></i></div>
+    </div>
+  </section>
+
+  <!-- SEG 04 · HEAT CHECK -->
+  <section class="seg" id="heat" data-scene="heat">
+    <div class="wrap">
+      <div class="seg-head">
+        <div class="slate"><span>SEG 04</span><span>Heat check</span><span class="tc" data-tc>--:--:--:--</span></div>
+        <h2>Check the heat on <em>anything.</em></h2>
+        <p>Type any name, company or word. You get its last 7 days of global coverage, its biggest spike and the tier it would have hit.</p>
+      </div>
+      <div class="heat-grid">
+        <div class="heat-main">
+          <form class="tool" id="heat-form" novalidate>
+            <div class="field">
+              <input id="heat-q" type="text" autocomplete="off" spellcheck="false" maxlength="60" placeholder="Type any name or word" aria-label="Name or word to check">
+              <button class="btn primary small" type="submit">Check the heat</button>
+            </div>
+            <p class="err" id="heat-err" hidden></p>
+            <div class="try"><span>Try</span><button type="button" data-try="Taylor Swift">Taylor Swift</button><button type="button" data-try="Nvidia">Nvidia</button><button type="button" data-try="World Cup">World Cup</button><button type="button" data-try="Bitcoin">Bitcoin</button></div>
+          </form>
+          <article class="result" id="result" data-t="quiet">
+            <div class="rs-head"><span class="label" id="rs-label">Example</span><span class="tier-tag" id="rs-tier" data-t="quiet">—</span></div>
+            <h3 id="rs-name">Tuning in…</h3>
+            <dl class="rs-stats">
+              <div><dt>Now</dt><dd id="rs-now">—</dd><small>vs 7-day normal</small></div>
+              <div><dt>7-day peak</dt><dd id="rs-peak">—</dd><small id="rs-peak-t">—</small></div>
+              <div><dt>Peak tier</dt><dd id="rs-ptier">—</dd><small id="rs-psize">—</small></div>
+              <div><dt>Countries</dt><dd id="rs-cn">—</dd><small>in the latest coverage</small></div>
+            </dl>
+            <div class="rs-load" id="rs-load" hidden><i></i><span id="rs-load-t">Pulling 7 days of coverage…</span></div>
+            <svg class="rs-chart chart" id="rs-chart" viewBox="0 0 640 180" aria-label="Seven days of coverage heat"></svg>
+            <ul class="heads" id="rs-heads"></ul>
+            <div class="rs-foot">
+              <button class="btn primary small" type="button" id="card-btn">Make a Break Card</button>
+              <button class="btn small" type="button" id="rs-copy">Copy text</button>
+              <span class="label">Data · GDELT Project</span>
+            </div>
+          </article>
+        </div>
+        <aside class="heat-side">
+          <div class="anchor" id="a-heat"></div>
+          <div class="cn-list"><span class="label">Where the latest coverage comes from</span><ol id="cn-list"></ol></div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEG 05 · RECORD -->
+  <section class="seg" id="record" data-scene="record">
+    <div class="wrap">
+      <div class="seg-head">
+        <div class="slate"><span>SEG 05</span><span>The record</span><span class="tc" data-tc>--:--:--:--</span></div>
+        <h2>Every order, <em>on the record.</em></h2>
+        <p>Orders come from public data, so anyone can recompute them. Fills come from the burn wallet on Solana, each with a link to its transaction.</p>
+      </div>
+      <div class="rec-grid">
+        <div class="rec-left">
+          <dl class="rec-stats">
+            <div><dt>Burned</dt><dd id="st-burned">—</dd><small id="st-burned-s">Read live from Solana</small></div>
+            <div><dt>Orders · 7 days</dt><dd id="st-orders">—</dd><small id="st-orders-s">—</small></div>
+            <div><dt>SOL ordered · 7 days</dt><dd id="st-sol">—</dd><small>sized by tier</small></div>
+            <div><dt>Daily cap</dt><dd id="st-cap">—</dd><small>then orders queue</small></div>
+          </dl>
+          <div class="anchor" id="a-rec"></div>
+        </div>
+        <div class="ledger">
+          <div class="lg-row lg-head"><span>Time · UTC</span><span>Beat</span><span>Peak</span><span>Tier</span><span>Size</span><span>Status</span></div>
+          <div id="lg-rows"><div class="lg-empty">Tuning in to the wire…</div></div>
+          <div class="fills" id="fills" hidden></div>
+          <p class="lg-note" id="lg-note">Orders are computed from public GDELT data. Fills are paid from creator fees and settle the oldest open order first.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEG 06 · TOKEN -->
+  <section class="seg" id="token" data-scene="token">
+    <div class="wrap">
+      <div class="token-grid">
+        <div class="tok-left"><div class="anchor" id="a-tok"></div></div>
+        <div class="tok-right">
+          <div class="slate"><span>SEG 06</span><span>The token</span><span class="tc" data-tc>--:--:--:--</span></div>
+          <h2>Headlines in. <em>Supply out.</em></h2>
+          <p class="sub">Creator fees from $BREAKING fund the burn desk. When a beat breaks, the desk buys $BREAKING back and burns it, sized by how big the story is.</p>
+          <dl class="facts">
+            <div><dt>Ticker</dt><dd>$BREAKING</dd></div>
+            <div><dt>Chain</dt><dd>Solana</dd></div>
+            <div><dt>Launch</dt><dd>pump.fun</dd></div>
+            <div><dt>Supply</dt><dd>1,000,000,000</dd></div>
+          </dl>
+          <div class="ca" id="ca-token"><span class="k">CA</span><span class="v">Posted here and on X at launch</span><button class="btn small" type="button" hidden>Copy</button></div>
+          <div class="sizes" id="sizes"></div>
+          <div class="flow">
+            <div class="flow-top"><b>$1.00</b><span class="label">of creator fees</span></div>
+            <div class="stack" id="stack"></div>
+            <div class="rows" id="fee-rows"></div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:12px" id="token-links">
+            <a class="btn primary" id="buy-token" href="https://pump.fun" target="_blank" rel="noopener">Buy on pump.fun ↗</a>
+          </div>
+        </div>
+      </div>
+      <div class="road">
+        <div><span class="label">On at launch</span><ul><li>A live wire of twelve beats</li><li>Burn orders with a public record</li><li>Heat checks and Break Cards for any word</li></ul></div>
+        <div><span class="label">Next</span><ul><li>A bot that fills orders the minute they fire</li><li>Break Cards posted to X on every burn</li></ul></div>
+        <div><span class="label">Later</span><ul><li>Holders vote on which beats stay on air</li><li>Launch a coin on your own word</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEG 07 · FAQ -->
+  <section class="seg" id="faq" data-scene="faq">
+    <div class="wrap faq-grid">
+      <div style="display:flex;flex-direction:column;gap:20px"><div class="slate"><span>SEG 07</span><span>Questions</span></div><h2>Before you <em>ask.</em></h2></div>
+      <div class="faq">
+        <details><summary>Is this financial advice?</summary><p>No. BREAKING measures news coverage. It never tells you to buy anything, and a burn says nothing about where a price goes.</p></details>
+        <details><summary>Are the burns automatic?</summary><p>The orders are. They’re computed from public data every 15 minutes and come out the same for everyone. At launch the burn wallet fills them by hand from creator fees, and every fill shows up on the record with its transaction. A bot that fills orders on its own is next on the roadmap.</p></details>
+        <details><summary>Where does the data come from?</summary><p>The GDELT Project, a free and open index of the world’s online news that updates every 15 minutes. We use its share-of-coverage timelines, so a spike means a word is taking a bigger slice of all news, not just that more news got written that day.</p></details>
+        <details><summary>Can someone fake a spike?</summary><p>Not cheaply. A spike needs a measurable share of the world’s coverage to move at once. A blog post or a wave of posts on X doesn’t register.</p></details>
+        <details><summary>Why these twelve words?</summary><p>They’re names, markets and tech that spike often and for many reasons. We left out wars, attacks and disasters on purpose. Nobody should profit from a tragedy trending.</p></details>
+        <details><summary>What if the creator fees run out?</summary><p>Orders wait in line and fill oldest first when fees come in. A daily cap, shown on the record, keeps one wild news day from draining the desk.</p></details>
+        <details><summary>Will BREAKING DM me?</summary><p>Never. There’s no presale, no airdrop and no support account. Anyone messaging you as BREAKING is not us.</p></details>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer data-scene="end" id="end">
+  <div class="wrap">
+    <div class="end-grid">
+      <div>
+        <div class="slate" style="margin-bottom:26px"><span>SIGN-OFF</span><span class="tc" data-tc>--:--:--:--</span></div>
+        <p class="final">We’ll be right <em>back.</em></p>
+        <div style="display:flex;flex-wrap:wrap;gap:12px" id="foot-links">
+          <a class="btn primary" id="buy-foot" href="https://pump.fun" target="_blank" rel="noopener">Buy $BREAKING ↗</a>
+          <a class="btn" href="#heat">Check the heat</a>
+        </div>
+        <div class="ca" id="ca-foot" style="margin-top:16px;max-width:460px"><span class="k">CA</span><span class="v">Posted here and on X at launch</span><button class="btn small" type="button" hidden>Copy</button></div>
+      </div>
+      <div class="anchor" id="a-end"></div>
+    </div>
+    <div class="foot"><span>BREAKING · When it hits the news, it burns.</span><span>Not financial advice. News data from the GDELT Project.</span></div>
+  </div>
+</footer>
+
+<div class="ticker" id="ticker" data-t="quiet" aria-label="Wire ticker">
+  <div class="tk-tag" id="tk-tag">WIRE</div>
+  <div class="tk-track"><div class="tk-run" id="tk-run"><span>Tuning in to the wire</span><span>Tuning in to the wire</span></div></div>
+  <div class="tk-lamp" id="tk-lamp"><span id="tk-lamp-t">--:-- UTC</span></div>
+</div>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-label="Break Card">
+    <div class="modal-row"><span class="label">Break Card</span><button class="btn small" type="button" id="modal-close">Close</button></div>
+    <img id="card-img" alt="Break Card with the beat, its heat and the globe">
+    <div class="modal-row">
+      <span class="label" style="text-transform:none;letter-spacing:.02em">Right-click or long-press the image to save it.</span>
+      <div style="display:flex;gap:8px"><button class="btn small" type="button" id="card-copy">Copy text</button><a class="btn primary small" id="card-dl" download="breaking.png" href="#">Save</a></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== Edit these at launch ===== */
+const CONFIG = {
+  ca: "",            // the $BREAKING mint address
+  x: "",             // e.g. "https://x.com/yourhandle"
+  dexscreener: "",   // optional
+  site: "",          // e.g. "breaking.fun", printed on Break Cards
+  launch: "",        // launch time, e.g. "2026-10-10T18:00:00Z". Orders before this show as Backtest
+  burnWallet: "",    // public address of the burn wallet; its burns show as fills on the record
+  rpc: "https://api.mainnet-beta.solana.com",
+  proxy: "/api/gdelt", // the cached GDELT proxy in /api (Vercel). Falls back to direct calls
+  supply: 1000000000,
+  baseSol: 0.1,      // order size for 1x (Urgent)
+  dailyCapSol: 3,
+  cooldownHours: 6,
+  tiers: [
+    { key: "watch",    label: "Watch",    at: 2,  mult: 0 },
+    { key: "urgent",   label: "Urgent",   at: 3,  mult: 1 },
+    { key: "bulletin", label: "Bulletin", at: 5,  mult: 3 },
+    { key: "flash",    label: "Flash",    at: 10, mult: 10 }
+  ],
+  beats: [
+    { label: "Elon Musk",       q: '"Elon Musk"' },
+    { label: "Bitcoin",         q: "bitcoin" },
+    { label: "Solana",          q: "solana" },
+    { label: "OpenAI",          q: "openai" },
+    { label: "Nvidia",          q: "nvidia" },
+    { label: "Federal Reserve", q: '"Federal Reserve"' },
+    { label: "Taylor Swift",    q: '"Taylor Swift"' },
+    { label: "Recession",       q: "recession" },
+    { label: "Tariffs",         q: "tariffs" },
+    { label: "Memecoin",        q: '(memecoin OR "meme coin")' },
+    { label: "Apple",           q: "apple" },
+    { label: "SEC",             q: '"Securities and Exchange Commission"' }
+  ],
+  fees: [
+    { label: "Burn desk", note: "Buys back and burns $BREAKING when an order fires", cents: 70 },
+    { label: "Wire and servers", note: "Hosting, the data proxy and the record", cents: 15 },
+    { label: "Development", note: "The fill bot and new beats", cents: 15 }
+  ]
+};
+
+/* ===== Basics ===== */
+const $ = id => document.getElementById(id);
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const ease = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
+const sstep = (a, b, v) => { const t = clamp((v - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const median = a => { if (!a.length) return 0; const s = a.slice().sort((x, y) => x - y), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const hhmm = t => new Date(t).toISOString().slice(11, 16);
+const dayhm = t => `${DAYS[new Date(t).getUTCDay()]} ${hhmm(t)}`;
+const fx = h => h >= 100 ? Math.round(h).toString() : h >= 10 ? h.toFixed(1).replace(/\.0$/, "") : h.toFixed(1);
+const fmtInt = n => Math.round(n).toLocaleString("en-US");
+const short = s => s.length > 12 ? s.slice(0, 4) + "…" + s.slice(-4) : s;
+const isAddr = s => /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(s);
+const TOKEN_ADDR = CONFIG.ca && isAddr(CONFIG.ca) ? CONFIG.ca : null;
+const LAUNCH = Date.parse(CONFIG.launch) || null;
+const ago = t => { const m = Math.max(1, Math.round((Date.now() - t) / 60000)); return m < 60 ? `${m}m ago` : m < 1440 ? `${Math.round(m / 60)}h ago` : `${Math.round(m / 1440)}d ago`; };
+
+/* ===== Tiers ===== */
+const TIERS = [{ key: "quiet", label: "Quiet", at: 0, mult: 0 }].concat(CONFIG.tiers);
+const tierIx = h => { let k = 0; TIERS.forEach((t, i) => { if (h >= t.at) k = i; }); return k; };
+const tierOf = h => TIERS[tierIx(h)];
+const ORDER_AT = (CONFIG.tiers.find(t => t.mult > 0) || { at: 3 }).at;
+const WATCH_AT = CONFIG.tiers[0].at;
+const solFor = t => +(CONFIG.baseSol * t.mult).toFixed(3);
+const heatU = h => clamp(Math.log(Math.max(h, 1)) / Math.log(12), 0, 1);
+const TCOL = { quiet: [.72, .78, .9], watch: [1, .68, .16], urgent: [1, .4, .15], bulletin: [1, .2, .11], flash: [1, .14, .09] };
+
+/* ===== Geography ===== */
+const LAND_B64 = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH/4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADf//8AAf///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB////D//////n/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/gf/x////////wAAAAAbgAAB4AAAAAAPwAAAAAAAAAAAAAAAAAAAAAAAAAAAf//8A///////+AAAAB/ngAAAAAAAAAAH8AAAAAAAAAAAAAAAAAAAAAAAAcH3Hv/5////////8AAAAA/gAAAAAAAAAAAAD4AAAAAAAAAAAAAAAAAAAAAAcIAAQP/AH///////+AAAAAPCAAAAAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAADwDAc+f+AP///////4AAAAAAAAAAAAAB4AAAAB/8AAAAAAAAAAAAAAAAAAAAAH9wc374AAAf/////8AAAAAAAAAAAAH4AAAA////AAAB/gAAAAAAAAAAAAAAAAwAAA/QAAAH/////8AAAAAAAAAAAAOAAAAP///wAAAAAAAAAAAAAAAAAAAAP8AYe+c3AAAD/////4AAAAAAAAAAAA4AAAH////++HgAOAAAAAAAAAAAAAAAfv+4+w/4gAAB/////wAAAAAAAAAAADwAHgH///////4AfgAAAAAgAAAAAAAAPf/4O4//9AAB/////wAAAAAAAAAAADwAPb////////4m//gAAAAAAAf+AAAAAA/+A8f//4AB////8gAAAAAAA/gAAAAAfv/////////////8AAAAAB///+H//H/+PeDwf+AA3////AAAAAAA//4AAAA8fv///////////////P8gAf////////A4CPz4H8AAP///wAAAAAAD///wADH/n3/////////////////8AD////////////34Z/wA///4AAAAAAAP///+M////n/////////////////+4E/////////////gD/8Af//gAAAAAAAf//5+P////f/////////////////fw/////////////6AD8YAf/wAAf8AAAA/8f+D///////////////////////AgEf///////////zw7/AAP/gAAP4AAAB/4/+f//////////////////////8AMAf//////////+DIA/gAH/gAAAAAAAH/z/////////////////////////+AAH///////////8AwgOAAD+AAAAAAAA//H/////////////////////////6AAP///////////wAA/AAAB+AAAAAAAB/+H//////////////////////nP+AAAH//z////////wAA/wAAAOAAAAAAAB//D/////////////////////+A/4AAAA/zAD///////gAA/4wAAAAAAAAAAB//Ab///////////////////+eDgAAAAABwAA///////4AA/94AAAAAAAAAYA5+A///////////////////4AAHAAAAAADcAAD//////4AAf/8AAAAAAAAA8AC+C///////////////////wAAfgAAAAAMAAAA///////wAf/8AAAAAAAAA4AO8H///////////////////AAA/gAAAABgAAAA///////8A///AAAAAAAAA8ANwH//////////////////8AAB/AAAAAEAAAAAf///////z///4AAAAAAAHOAEDv//////////////////+AAA+AAAAAAAAAABH///////x///8AAAAAAAHHAf/////////////////////6AA8AAAAAAAAAAAD///////x///8AAAAAAAGPz//////////////////////6AAwAAAAAAAAAAAD///////9///6AAAAAAAAPj//////////////////////6AAQAAAAAAAAAAAC///////////MAAAAAAAAYf//////////////////////7AAAAAAAAAAAAAABv////////+MNAAAAAAAAD///////////////////////zAAAAAAAAAAAAAAAH////////7gfgAAAAAAAf///////////////////////yAAAAAAAAAAAAAAAL/////////gCgAAAAAAAH///////////////////////iAAAAAAAAAAAAAAAP/////////pAAAAAAAAAD/////uP/x//////////////DAAAAAAAAAAAAAAAP/////////+AAAAAAAAAB//v//Gf/B/////////////+AAAAAAAAAAAAAAAAP////////8wAAAAAAAAAB//H/+AP+P/////////////8CAAAAAAAAAAAAAAAP////////wAAAAAAAAADj/jz/8AD/H/////////////4HgAAAAAAAAAAAAAAP////////gAAAAAAAAAH/4Bw/8AA/B////////////+APAAAAAAAAAAAAAAAP////////gAAAAAAAAAH/wA8f8Ph/g////////////8AAAAAAAAAAAAAAAAAP///////8AAAAAAAAAAH/gMHfJ///x///////////v4AMAAAAAAAAAAAAAAAP///////8AAAAAAAAAAH/AMCOP///h//////////+JwAMAAAAAAAAAAAAAAAH///////4AAAAAAAAAAH/AAAHH///g//////////8BwAIAAAAAAAAAAAAAAAH///////wAAAAAAAAAAH+AAYGH///w//////////+w4A4AAAAAAAAAAAAAAAD///////wAAAAAAAAAAAgf+ACBs//////////////g4D4AAAAAAAAAAAAAAAB///////wAAAAAAAAAAAj/+AAAA//////////////AYf4AAAAAAAAAAAAAAAA///////gAAAAAAAAAAB//8AAAA//////////////Ah2AAAAAAAAAAAAAAAAAP/////+AAAAAAAAAAAD//+AAAB//////////////gDwAAAAAAAAAAAAAAAAAH/////8AAAAAAAAAAAH///4GAB//////////////gDAAAAAAAAAAAAAAAAAAG/////4AAAAAAAAAAAP///8P4h//////////////wCAAAAAAAAAAAAAAAAAACf////4AAAAAAAAAAAP////v////////////////gAAAAAAAAAAAAAAAAAAABP//hgYAAAAAAAAAAAP//////3//P///////////wAAAAAAAAAAAAAAAAAAAAv//AAYAAAAAAAAAAAf//////9//H///////////wAAAAAAAAAAAAAAAAAAAB3/+AAcAAAAAAAAAAB///////4//h///////////gAAAAAAAAAAAAAAAAAAAAR/+AANAAAAAAAAAAD///////8//wH//////////AAAAAAAAAAAAAAAAAAAAAJ/+AAEAAAAAAAAAAH///////+f/0B/////////+AAAAAAAAAAAAAAAAAAAAAI/8AAAAAAAAAAAAAH///////+f/44Af///////+QAAAAAAAAAAAAAAAAAAAAAf8AAAAAAAAAAAAAP////////H//+AP///////4gAAAAAAAAAAAAAAAAAAAAAP8AAuAAAAAAAAAAP////////H///AD///v///ggAAAAAAAAAAAAAAAAAAAAAH+AABgAAAAAAAAAf////////n//+AD//4P//YAAAAAAAAAAAAAAAAAAAAAAAP+A4AYAAAAAAAAAP////////j//+AAf/4H/+AAAAAAAAAAAAAAAAgAAAAAAAH/B4ABwAAAAAAAAP////////h//8AAf/gD/8YAAAAAAAAAAAAAAAAAAAAAAAD/nwAD9AAAAAAAAP////////x//4AAf/AD/8QAAAAAAAAAAAAAAAAAAAAAAAAf/wAAAAAAAAAAAP////////4//gAAf+AD/+AAwAAAAAAAAAAAAAAAAAAAAAAH/wAAAAAAAAAAAf////////4f+AAAf8AD//AAwAAAAAAAAAAAAAAAAAAAAAAAH/AAAAAAAAAAAf////////8f8AAAPwAAP/gAwAAAAAAAAAAAAAAAAAAAAAAAD/gAAAAAAAAAAf////////+fgAAAPwAAP/gAwAAAAAAAAAAAAAAAAAAAAAAAA/AAAAAAAAAAAf/////////eAAAAHwAAP/gAMAAAAAAAAAAAAAAAAAAAAAAAAHgAAAAAAAAAAf/////////gAAAAHwAAM/gACAAAAAAAAAAAAAAAAAAAAAAAADABAAAAAAAAAP/////////gYAAADwAAEfgAJAAAAAAAAAAAAAAAAAAAAAAAADgPfKAAAAAAAH/////////34AAADwAAIOABAAAAAAAAAAAAAAAAAAAAAAAAAAyPf+AAAAAAAD//////////4AAADoAAIEACBAAAAAAAAAAAAAAAAAAAAAAAAA8///AAAAAAAB//////////wAAABIAAMAAAFAAAAAAAAAAAAAAAAAAAAAAAAAE///gAAAAAAB//////////wAAAAMAAEAAALgAAAAAAAAAAAAAAAAAAAAAAAAAf//wAAAAAAAf/////////gAAAAMAADAAMCAAAAAAAAAAAAAAAAAAAAAAAAAA////gAAAAAAP/B///////gAAAAAAADgAOAAAAAAAAAAAAAAAAAAAAAAAAAAAf///wAAAAAACAA///////AAAAAAAAxgA+AAAAAAAAAAAAAAAAAAAAAAAAAAAf///4AAAAAAAAAD/////+AAAAAAAAZgB4AAAAAAAAAAAAAAAAAAAAAAAAAAB////4AAAAAAAAAD/////8AAAAAAAAMwH8AAAAAAAAAAAAAAAAAAAAAAAAAAB////8AAAAAAAAAH/////4AAAAAAAAHQf8AIAAAAAAAAAAAAAAAAAAAAAAAAD////8AAAAAAAAAH/////gAAAAAAAAHgf88IAAAAAAAAAAAAAAAAAAAAAAAAD////+AAAAAAAAAH/////AAAAAAAAADwf8AAgAAAAAAAAAAAAAAAAAAAAAAAH/////4AAAAAAAAH/////AAAAAAAAABwP5wBwAAAAAAAAAAAAAAAAAAAAAAAH/////6AAAAAAAAD////+AAAAAAAAAB8P5wATwAAAAAAAAAAAAAAAAAAAAAAD//////4AAAAAAAB////8AAAAAAAAAA8AxQif+AAAAAAAAAAAAAAAAAAAAAAH//////8AAAAAAAB////4AAAAAAAAAAcAAIAD/gAAAAAAAAAAAAAAAAAAAAAH///////gAAAAAAA////4AAAAAAAAAAMAAIAI/ywAAAAAAAAAAAAAAAAAAAAH///////gAAAAAAA////4AAAAAAAAAADgAAAI/8BAAAAAAAAAAAAAAAAAAAAD///////gAAAAAAAf///4AAAAAAAAAAB+AAAA/4AIAAAAAAAAAAAAAAAAAAAB///////gAAAAAAAf///4AAAAAAAAAAAAmogAOMAAAAAAAAAAAAAAAAAAAAAB///////AAAAAAAAf///8AAAAAAAAAAAABCAAAGADAAAAAAAAAAAAAAAAAAAA///////AAAAAAAAf///8AAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAf/////+AAAAAAAAP///8AAAAAAAAAAAAAAAgCAAAAAAAAAAAAAAAAAAAAAAAf/////8AAAAAAAAf///+AQAAAAAAAAAAAAB+CAAAAAAAAAAAAAAAAAAAAAAAP/////4AAAAAAAAf///+AQAAAAAAAAAAAAD8DAAAAAAAAAAAAAAAAAAAAAAAP/////4AAAAAAAA////+AwAAAAAAAAAAAA38DgAAAAAAAAAAAAAAAAAAAAAAH/////4AAAAAAAA////8BwAAAAAAAAAAAD/8DgAAAAAAAAAAAAAAAAAAAAAAB/////4AAAAAAAA////8PwAAAAAAAAAAAD//HwAABABAAAAAAAAAAAAAAAAAAf////4AAAAAAAA////wPgAAAAAAAAAAAP//3wAAAACAAAAAAAAAAAAAAAAAAP////wAAAAAAAA////APgAAAAAAAAAAAP///wAAAAAAAAAAAAAAAAAAAAAAAP////wAAAAAAAAf//+APgAAAAAAAAAAAf///4AAAAAAAAAAAAAAAAAAAAAAAP////wAAAAAAAAf//+APgAAAAAAAAAAD////+AAIAAAAAAAAAAAAAAAAAAAAP////gAAAAAAAAP//+AfAAAAAAAAAAAf////+AAEAAAAAAAAAAAAAAAAAAAAP////AAAAAAAAAP///AfAAAAAAAAAAA//////AAAAAAAAAAAAAAAAAAAAAAAP///4AAAAAAAAAP//+APAAAAAAAAAAA//////gAAAAAAAAAAAAAAAAAAAAAAf///gAAAAAAAAAH//+AOAAAAAAAAAAB//////wAAAAAAAAAAAAAAAAAAAAAAf///AAAAAAAAAAH//4AEAAAAAAAAAAA//////4AAAAAAAAAAAAAAAAAAAAAAf//+AAAAAAAAAAH//4AAAAAAAAAAAAB//////4AAAAAAAAAAAAAAAAAAAAAAf//+AAAAAAAAAAH//4AAAAAAAAAAAAA//////4AAAAAAAAAAAAAAAAAAAAAAf//+AAAAAAAAAAD//wAAAAAAAAAAAAAf/////8AAAAAAAAAAAAAAAAAAAAAAf//8AAAAAAAAAAB//gAAAAAAAAAAAAAf/////4AAAAAAAAAAAAAAAAAAAAAA///8AAAAAAAAAAB//gAAAAAAAAAAAAAf/////4AAAAAAAAAAAAAAAAAAAAAA///4AAAAAAAAAAA//AAAAAAAAAAAAAAP/////4AAAAAAAAAAAAAAAAAAAAAAf//wAAAAAAAAAAA/+AAAAAAAAAAAAAAP/AP//wAAAAAAAAAAAAAAAAAAAAAA///gAAAAAAAAAAA/4AAAAAAAAAAAAAAf8AG//gAAAAAAAAAAAAAAAAAAAAAA//3AAAAAAAAAAAAYAAAAAAAAAAAAAAAOAAF//gAAAAAAAAAAAAAAAAAAAAAB//4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//AAABAAAAAAAAAAAAAAAAAAB//4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/AAAAgAAAAAAAAAAAAAAAAAD//4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP/AAAAQAAAAAAAAAAAAAAAAAB//gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABYAAAAcAAAAAAAAAAAAAAAAAB/8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAAAAD/8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAAAAD/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcAAADQAAAAAAAAAAAAAAAAAD/4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAcAAAHAAAAAAAAAAAAAAAAAAB/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAOAAAAAAAAAAAAAAAAAAD/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAAAAAH+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB4AAAAAAAAAAAAAAAAAAH+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAAAAAH/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP8AAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAH4AwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAABwAAAAAAAAAAAAAAAAAAH4AAAAAAB4HgAD8AAAAAAAAAAAAAAAAAAAAAAAAADgAAAAAAAAAAAAAAAAAA//AAAD//////////wAAAAAAAAAAAAAAAAAAAAAAADgAAAAAAAAAAAAAAAAAf///4Af///////////AAAAAAAAAAAAAAAAAAAAAAAz4AAAAAAAAAAAAAAAPz////8B/////////////wAAAAAAAAAAAAAAAAAAAAA78AAAAAAAAAAA8/8///////wf/////////////+AAAAAAAAAAAAAAAAAAAAH9+AAAAAAAAZ////////////w////////////////4AAAAAAAAAAAAAAAAAAAB+AAAAAAAB//////////////////////////////4AAAAAAAAABmAAB8f+HB/+AAAAAAAP//////////////////////////////gAAAAAAAAP/c/oAf/////4AAAAAAAP/////////////////////////////8AAAAAAAD/////////////gAAAAAAB//////////////////////////////wAAAAAAAD////////////wAAAAAAP///////////////////////////////wAAAAAD/////////////4AAAAAAD////////////////////////////////wAAAADh/////////////AAAAB8A/////////////////////////////////+AAAAA4Af///////////gAAAH+AA///////////////////////////////+AAAAAAAAH///////////+A/A/wAA///////////////////////////////8AAAAAAAf//////////////gAAAf////////////////////////////////+AAAAAAAH///////////////h////////////////////////////////////wAAAAAAP/////////////////////////////////////////////////////gA+/gAAH/////////////////////////////////////////////////////8/////v//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////";
+const COUNTRIES = {"Fiji":[-17.8,178.0],"United Republic of Tanzania":[-6.1,35.0],"Tanzania":[-6.1,35.0],"Western Sahara":[24.0,-12.6],"W. Sahara":[24.0,-12.6],"Canada":[60.3,-101.9],"United States of America":[39.5,-97.5],"United States":[39.5,-97.5],"Kazakhstan":[49.1,68.7],"Uzbekistan":[41.7,64.0],"Papua New Guinea":[-5.7,143.9],"Indonesia":[-1.0,101.9],"Argentina":[-33.5,-64.2],"Chile":[-38.2,-72.3],"Democratic Republic of the Congo":[-1.9,23.5],"Dem. Rep. Congo":[-1.9,23.5],"Somalia":[3.6,45.2],"Kenya":[0.5,37.9],"Sudan":[16.3,29.3],"Chad":[15.1,18.6],"Haiti":[19.3,-72.2],"Dominican Republic":[19.1,-70.7],"Dominican Rep.":[19.1,-70.7],"Russia":[58.2,44.7],"Russian Federation":[58.2,44.7],"The Bahamas":[26.4,-77.1],"Bahamas":[26.4,-77.1],"Falkland Islands":[-51.6,-58.7],"Falkland Is.":[-51.6,-58.7],"Falkland Islands / Malvinas":[-51.6,-58.7],"Norway":[61.4,9.7],"Greenland":[74.3,-39.3],"French Southern and Antarctic Lands":[-49.3,69.1],"Fr. S. Antarctic Lands":[-49.3,69.1],"Fr. S. and Antarctic Lands":[-49.3,69.1],"East Timor":[-8.8,125.9],"Timor-Leste":[-8.8,125.9],"South Africa":[-29.7,23.7],"Lesotho":[-29.5,28.2],"Mexico":[23.9,-102.3],"Uruguay":[-33.0,-56.0],"Brazil":[-12.1,-49.6],"Bolivia":[-16.7,-64.6],"Peru":[-13.0,-72.9],"Colombia":[3.4,-73.2],"Panama":[8.7,-80.4],"Costa Rica":[10.1,-84.1],"Nicaragua":[12.7,-85.1],"Honduras":[14.8,-86.9],"El Salvador":[13.7,-88.9],"Guatemala":[15.0,-90.5],"Belize":[17.2,-88.7],"Venezuela":[7.2,-64.6],"Guyana":[5.1,-58.9],"Suriname":[4.1,-55.9],"France":[46.7,2.6],"Ecuador":[-1.3,-78.2],"Puerto Rico":[18.2,-66.5],"Jamaica":[18.1,-77.3],"Cuba":[21.3,-78.0],"Zimbabwe":[-18.9,29.9],"Botswana":[-22.1,24.2],"Namibia":[-20.6,17.1],"Senegal":[15.1,-14.8],"Mali":[18.7,-2.0],"Mauritania":[19.6,-9.7],"Benin":[10.3,2.4],"Niger":[17.4,9.5],"Nigeria":[9.4,7.5],"Cameroon":[4.6,12.5],"Togo":[8.8,1.1],"Ghana":[7.7,-1.0],"Ivory Coast":[7.5,-5.6],"Côte d'Ivoire":[7.5,-5.6],"Guinea":[10.6,-10.0],"Guinea-Bissau":[12.2,-14.5],"Liberia":[6.4,-9.5],"Sierra Leone":[8.6,-11.8],"Burkina Faso":[12.7,-1.4],"Central African Republic":[7.0,20.9],"Central African Rep.":[7.0,20.9],"Republic of the Congo":[0.1,15.9],"Congo":[0.1,15.9],"Gabon":[-0.4,11.8],"Equatorial Guinea":[2.3,9.0],"Eq. Guinea":[2.3,9.0],"Zambia":[-14.7,26.4],"Malawi":[-13.4,33.6],"Mozambique":[-13.9,37.8],"eSwatini":[-26.5,31.5],"Kingdom of eSwatini":[-26.5,31.5],"Eswatini":[-26.5,31.5],"Angola":[-12.2,18.0],"Burundi":[-3.3,29.9],"Israel":[30.9,34.8],"Lebanon":[34.1,36.0],"Madagascar":[-18.6,46.7],"Palestine":[32.0,35.3],"Gambia":[13.6,-15.0],"The Gambia":[13.6,-15.0],"Tunisia":[33.7,9.0],"Algeria":[27.4,2.8],"Jordan":[30.8,36.4],"United Arab Emirates":[23.5,54.5],"Qatar":[25.2,51.1],"Kuwait":[29.4,47.3],"Iraq":[33.1,43.3],"Oman":[22.1,57.3],"Vanuatu":[-15.4,166.9],"Cambodia":[12.6,104.5],"Thailand":[15.5,101.1],"Laos":[19.4,102.5],"Lao PDR":[19.4,102.5],"Myanmar":[21.6,95.8],"Vietnam":[21.7,105.4],"North Korea":[39.9,126.4],"Dem. Rep. Korea":[39.9,126.4],"South Korea":[36.4,128.1],"Republic of Korea":[36.4,128.1],"Mongolia":[46.0,104.2],"India":[22.7,79.4],"Bangladesh":[24.2,89.7],"Bhutan":[27.5,90.0],"Nepal":[28.3,83.6],"Pakistan":[29.3,68.5],"Afghanistan":[34.2,66.5],"Tajikistan":[38.2,72.6],"Kyrgyzstan":[41.7,74.5],"Turkmenistan":[39.9,58.7],"Iran":[32.2,54.9],"Syria":[35.0,38.3],"Armenia":[40.5,44.8],"Sweden":[65.9,19.0],"Belarus":[53.8,28.4],"Ukraine":[49.7,32.1],"Poland":[52.0,19.5],"Austria":[47.5,14.1],"Hungary":[47.1,19.4],"Moldova":[47.4,28.5],"Romania":[45.7,25.0],"Lithuania":[55.1,24.1],"Latvia":[57.1,25.5],"Estonia":[58.7,25.9],"Germany":[51.0,9.7],"Bulgaria":[42.5,25.2],"Greece":[39.5,21.7],"Turkey":[39.3,34.5],"Albania":[40.7,20.1],"Croatia":[45.8,16.4],"Switzerland":[46.7,7.5],"Luxembourg":[49.7,6.1],"Belgium":[50.8,4.8],"Netherlands":[52.4,5.6],"Portugal":[39.6,-8.3],"Spain":[40.1,-3.5],"Ireland":[53.1,-7.8],"New Caledonia":[-21.1,165.1],"Solomon Islands":[-8.0,159.2],"Solomon Is.":[-8.0,159.2],"New Zealand":[-39.8,172.8],"Australia":[-24.1,134.0],"Sri Lanka":[7.6,80.7],"China":[32.5,106.3],"People's Republic of China":[32.5,106.3],"Taiwan":[23.7,120.9],"Italy":[44.7,11.1],"Denmark":[56.0,9.0],"United Kingdom":[54.4,-2.1],"Iceland":[64.8,-18.7],"Azerbaijan":[40.4,47.2],"Georgia":[41.9,43.7],"Philippines":[11.2,122.5],"Malaysia":[2.5,113.8],"Brunei":[4.4,114.6],"Brunei Darussalam":[4.4,114.6],"Slovenia":[46.1,14.9],"Finland":[63.3,27.3],"Slovakia":[48.7,19.0],"Czechia":[49.9,15.4],"Czech Republic":[49.9,15.4],"Eritrea":[15.8,38.3],"Japan":[36.1,138.4],"Paraguay":[-21.7,-60.1],"Yemen":[15.3,45.9],"Saudi Arabia":[23.8,44.7],"Antarctica":[-79.8,35.9],"Northern Cyprus":[35.2,33.7],"N. Cyprus":[35.2,33.7],"Turkish Republic of Northern Cyprus":[35.2,33.7],"Cyprus":[34.9,33.1],"Morocco":[31.7,-7.2],"Egypt":[26.2,29.4],"Libya":[26.6,18.0],"Ethiopia":[8.0,39.1],"Djibouti":[12.0,42.5],"Somaliland":[9.4,46.7],"Uganda":[2.0,32.9],"Rwanda":[-1.9,30.1],"Bosnia and Herzegovina":[44.1,18.1],"Bosnia and Herz.":[44.1,18.1],"North Macedonia":[41.6,21.6],"Republic of Serbia":[44.2,20.8],"Serbia":[44.2,20.8],"Montenegro":[42.8,19.1],"Kosovo":[42.6,20.9],"Trinidad and Tobago":[11.0,-60.9],"South Sudan":[7.2,30.4],"S. Sudan":[7.2,30.4],"Republic of Fiji":[-17.8,178.0],"Sahrawi Arab Democratic Republic":[24.0,-12.6],"Republic of Kazakhstan":[49.1,68.7],"Republic of Uzbekistan":[41.7,64.0],"Independent State of Papua New Guinea":[-5.7,143.9],"Republic of Indonesia":[-1.0,101.9],"Argentine Republic":[-33.5,-64.2],"Republic of Chile":[-38.2,-72.3],"Congo, Dem. Rep.":[-1.9,23.5],"Federal Republic of Somalia":[3.6,45.2],"Republic of Kenya":[0.5,37.9],"Republic of the Sudan":[16.3,29.3],"Republic of Chad":[15.1,18.6],"Republic of Haiti":[19.3,-72.2],"Bahamas, The":[26.4,-77.1],"Commonwealth of the Bahamas":[26.4,-77.1],"Kingdom of Norway":[61.4,9.7],"Territory of the French Southern and Antarctic Lands":[-49.3,69.1],"Democratic Republic of Timor-Leste":[-8.8,125.9],"Republic of South Africa":[-29.7,23.7],"Kingdom of Lesotho":[-29.5,28.2],"United Mexican States":[23.9,-102.3],"Oriental Republic of Uruguay":[-33.0,-56.0],"Federative Republic of Brazil":[-12.1,-49.6],"Plurinational State of Bolivia":[-16.7,-64.6],"Republic of Peru":[-13.0,-72.9],"Republic of Colombia":[3.4,-73.2],"Republic of Panama":[8.7,-80.4],"Republic of Costa Rica":[10.1,-84.1],"Republic of Nicaragua":[12.7,-85.1],"Republic of Honduras":[14.8,-86.9],"Republic of El Salvador":[13.7,-88.9],"Republic of Guatemala":[15.0,-90.5],"Venezuela, RB":[7.2,-64.6],"Bolivarian Republic of Venezuela":[7.2,-64.6],"Co-operative Republic of Guyana":[5.1,-58.9],"Republic of Suriname":[4.1,-55.9],"French Republic":[46.7,2.6],"Republic of Ecuador":[-1.3,-78.2],"Commonwealth of Puerto Rico":[18.2,-66.5],"Republic of Cuba":[21.3,-78.0],"Republic of Zimbabwe":[-18.9,29.9],"Republic of Botswana":[-22.1,24.2],"Republic of Namibia":[-20.6,17.1],"Republic of Senegal":[15.1,-14.8],"Republic of Mali":[18.7,-2.0],"Islamic Republic of Mauritania":[19.6,-9.7],"Republic of Benin":[10.3,2.4],"Republic of Niger":[17.4,9.5],"Federal Republic of Nigeria":[9.4,7.5],"Republic of Cameroon":[4.6,12.5],"Togolese Republic":[8.8,1.1],"Republic of Ghana":[7.7,-1.0],"Republic of Ivory Coast":[7.5,-5.6],"Republic of Guinea":[10.6,-10.0],"Republic of Guinea-Bissau":[12.2,-14.5],"Republic of Liberia":[6.4,-9.5],"Republic of Sierra Leone":[8.6,-11.8],"Congo, Rep.":[0.1,15.9],"Gabonese Republic":[-0.4,11.8],"Republic of Equatorial Guinea":[2.3,9.0],"Republic of Zambia":[-14.7,26.4],"Republic of Malawi":[-13.4,33.6],"Republic of Mozambique":[-13.9,37.8],"People's Republic of Angola":[-12.2,18.0],"Republic of Burundi":[-3.3,29.9],"State of Israel":[30.9,34.8],"Lebanese Republic":[34.1,36.0],"Republic of Madagascar":[-18.6,46.7],"Palestine (West Bank and Gaza)":[32.0,35.3],"West Bank and Gaza":[32.0,35.3],"Gambia, The":[13.6,-15.0],"Republic of the Gambia":[13.6,-15.0],"Republic of Tunisia":[33.7,9.0],"People's Democratic Republic of Algeria":[27.4,2.8],"Hashemite Kingdom of Jordan":[30.8,36.4],"State of Qatar":[25.2,51.1],"State of Kuwait":[29.4,47.3],"Republic of Iraq":[33.1,43.3],"Sultanate of Oman":[22.1,57.3],"Republic of Vanuatu":[-15.4,166.9],"Kingdom of Cambodia":[12.6,104.5],"Kingdom of Thailand":[15.5,101.1],"Lao People's Democratic Republic":[19.4,102.5],"Republic of the Union of Myanmar":[21.6,95.8],"Socialist Republic of Vietnam":[21.7,105.4],"Korea, Dem. Rep.":[39.9,126.4],"Democratic People's Republic of Korea":[39.9,126.4],"Korea, Rep.":[36.4,128.1],"Republic of India":[22.7,79.4],"People's Republic of Bangladesh":[24.2,89.7],"Kingdom of Bhutan":[27.5,90.0],"Islamic Republic of Pakistan":[29.3,68.5],"Islamic State of Afghanistan":[34.2,66.5],"Republic of Tajikistan":[38.2,72.6],"Kyrgyz Republic":[41.7,74.5],"Iran, Islamic Rep.":[32.2,54.9],"Islamic Republic of Iran":[32.2,54.9],"Syrian Arab Republic":[35.0,38.3],"Republic of Armenia":[40.5,44.8],"Kingdom of Sweden":[65.9,19.0],"Republic of Belarus":[53.8,28.4],"Republic of Poland":[52.0,19.5],"Republic of Austria":[47.5,14.1],"Republic of Hungary":[47.1,19.4],"Republic of Moldova":[47.4,28.5],"Republic of Lithuania":[55.1,24.1],"Republic of Latvia":[57.1,25.5],"Republic of Estonia":[58.7,25.9],"Federal Republic of Germany":[51.0,9.7],"Republic of Bulgaria":[42.5,25.2],"Hellenic Republic":[39.5,21.7],"Republic of Turkey":[39.3,34.5],"Republic of Albania":[40.7,20.1],"Republic of Croatia":[45.8,16.4],"Swiss Confederation":[46.7,7.5],"Grand Duchy of Luxembourg":[49.7,6.1],"Kingdom of Belgium":[50.8,4.8],"Kingdom of the Netherlands":[52.4,5.6],"Portuguese Republic":[39.6,-8.3],"Kingdom of Spain":[40.1,-3.5],"Commonwealth of Australia":[-24.1,134.0],"Democratic Socialist Republic of Sri Lanka":[7.6,80.7],"Italian Republic":[44.7,11.1],"Kingdom of Denmark":[56.0,9.0],"United Kingdom of Great Britain and Northern Ireland":[54.4,-2.1],"Republic of Iceland":[64.8,-18.7],"Republic of Azerbaijan":[40.4,47.2],"Republic of the Philippines":[11.2,122.5],"Negara Brunei Darussalam":[4.4,114.6],"Republic of Slovenia":[46.1,14.9],"Republic of Finland":[63.3,27.3],"Slovak Republic":[48.7,19.0],"State of Eritrea":[15.8,38.3],"Republic of Paraguay":[-21.7,-60.1],"Yemen, Rep.":[15.3,45.9],"Republic of Yemen":[15.3,45.9],"Kingdom of Saudi Arabia":[23.8,44.7],"Cyprus, Northern":[35.2,33.7],"Republic of Cyprus":[34.9,33.1],"Kingdom of Morocco":[31.7,-7.2],"Egypt, Arab Rep.":[26.2,29.4],"Arab Republic of Egypt":[26.2,29.4],"Federal Democratic Republic of Ethiopia":[8.0,39.1],"Republic of Djibouti":[12.0,42.5],"Republic of Somaliland":[9.4,46.7],"Republic of Uganda":[2.0,32.9],"Republic of Rwanda":[-1.9,30.1],"Republic of North Macedonia":[41.6,21.6],"Republic of Kosovo":[42.6,20.9],"Republic of Trinidad and Tobago":[11.0,-60.9],"Republic of South Sudan":[7.2,30.4],"Singapore":[1.35,103.8],"Hong Kong":[22.3,114.2],"Malta":[35.9,14.4],"Bahrain":[26.1,50.6],"Macau":[22.2,113.5],"Mauritius":[-20.3,57.6],"Barbados":[13.2,-59.6],"Bermuda":[32.3,-64.8],"Monaco":[43.7,7.4],"Liechtenstein":[47.1,9.5],"Andorra":[42.5,1.5],"Maldives":[3.2,73.2],"Seychelles":[-4.7,55.5],"Grenada":[12.1,-61.7],"Saint Lucia":[13.9,-61],"Antigua and Barbuda":[17.1,-61.8],"Isle of Man":[54.2,-4.5],"Jersey":[49.2,-2.1],"Guernsey":[49.5,-2.6],"Gibraltar":[36.1,-5.4],"Cote d'Ivoire":[7.5,-5.6],"Burma":[21.6,95.8],"Swaziland":[-26.5,31.5],"Macedonia":[41.6,21.6],"Korea, South":[36.4,128.1],"Korea, North":[39.9,126.4],"UK":[54.4,-2.1],"Bosnia-Herzegovina":[44.1,18.1],"Vatican City":[44.7,11.1],"West Bank":[32.0,35.3],"Gaza Strip":[32.0,35.3]};
+const D2R = Math.PI / 180;
+function countryLL(name){ const c = COUNTRIES[name]; return c ? [c[0] * D2R, c[1] * D2R] : null; }
+const PREVIEW_CN = [["United States", 31], ["United Kingdom", 12], ["India", 9], ["Germany", 6], ["Canada", 5], ["Australia", 5], ["France", 4], ["Japan", 4], ["Brazil", 3], ["Nigeria", 3], ["South Africa", 2], ["Singapore", 2], ["Spain", 2], ["Philippines", 2]];
+const DEMO_CN = ["United States", "United Kingdom", "India", "Germany", "Japan", "France", "Canada", "Australia", "South Korea", "Brazil", "Singapore", "Nigeria", "Mexico", "Indonesia"];
+function cnList(pairs){ const max = Math.max(1, ...pairs.map(p => p[1])); return pairs.map(([n, c]) => { const ll = countryLL(n); return ll ? { key: n, lat: ll[0], lon: ll[1], w: .35 + .65 * c / max, n: c } : null; }).filter(Boolean).slice(0, 16); }
+
+/* ===== Data: GDELT wire ===== */
+const GDELT = "https://api.gdeltproject.org/api/v2/doc/doc";
+const Net = { mode: null, q: [], running: false, last: 0 };
+const qs = p => Object.entries(p).map(([k, v]) => k + "=" + encodeURIComponent(v)).join("&");
+function cacheGet(k){ try { const r = JSON.parse(localStorage.getItem("brkg:" + k) || "null"); if (r && Date.now() - r.t < 10 * 60e3) return r.d; } catch (e){} return null; }
+function cacheSet(k, d){ try { localStorage.setItem("brkg:" + k, JSON.stringify({ t: Date.now(), d })); } catch (e){} }
+function enqueue(params, prio){
+  return new Promise((res, rej) => { const job = { params, res, rej, tries: 0 }; prio ? Net.q.unshift(job) : Net.q.push(job); pump(); });
+}
+async function pump(){
+  if (Net.running) return; Net.running = true;
+  while (Net.q.length){
+    const job = Net.q.shift(), key = qs(job.params), c = cacheGet(key);
+    if (c){ job.res(c); continue; }
+    if (Net.mode === "none"){ job.rej({ kind: "offline" }); continue; }
+    const gap = Net.mode === "proxy" ? 1300 : 5400, wait = Net.last + gap - Date.now();
+    if (wait > 0) await sleep(wait);
+    const prevLast = Net.last; Net.last = Date.now();
+    try { const j = await doFetch(job.params); if (j && j.__hit){ delete j.__hit; Net.last = prevLast; } cacheSet(key, j); job.res(j); }
+    catch (e){
+      if (e.kind === "throttle" && job.tries < 3){ job.tries++; Net.last = Date.now() + 1500; Net.q.unshift(job); }
+      else { if (e.kind === "network"){ Net.mode = "none"; } job.rej(e); }
+    }
+  }
+  Net.running = false;
+}
+async function doFetch(params){
+  const q = qs(params);
+  if (Net.mode !== "direct" && CONFIG.proxy && location.protocol.startsWith("http")){
+    try {
+      const r = await fetch(CONFIG.proxy + "?" + q, { headers: { accept: "application/json" } });
+      if ((r.headers.get("content-type") || "").includes("json")){
+        const j = await r.json(); Net.mode = "proxy";
+        if (r.ok){ if (/HIT|STALE/i.test(r.headers.get("x-vercel-cache") || "") && j && typeof j === "object") j.__hit = true; return j; }
+        if (r.status === 429) throw { kind: "throttle" };
+        throw { kind: "error", msg: j.error || "HTTP " + r.status };
+      }
+    } catch (e){ if (e && e.kind) throw e; }
+    Net.mode = "direct";
+  }
+  Net.mode = "direct";
+  let t;
+  try { const r = await fetch(GDELT + "?" + q); t = (await r.text()).trim(); }
+  catch (e){ throw { kind: "network" }; }
+  if (t[0] === "{" || t[0] === "["){ try { return JSON.parse(t); } catch (e){ throw { kind: "error", msg: "Unreadable reply from the wire" }; } }
+  if (/limit requests/i.test(t)) throw { kind: "throttle" };
+  throw { kind: "error", msg: t.slice(0, 160) };
+}
+function gdDate(s){
+  if (typeof s !== "string") return NaN;
+  const m = s.match(/^(\d{4})(\d{2})(\d{2})T?(\d{2})(\d{2})(\d{2})/);
+  return m ? Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6]) : Date.parse(s);
+}
+function parseTimeline(j){
+  const d = j && j.timeline && j.timeline[0] && j.timeline[0].data;
+  if (!d || d.length < 8) return null;
+  const s = d.map(p => ({ t: gdDate(p.date), v: +p.value || 0 })).filter(p => !isNaN(p.t));
+  return s.length >= 8 ? s : null;
+}
+
+/* ===== Analysis: heat, peaks, orders ===== */
+function analyze(raw){
+  const s = raw.slice().sort((a, b) => a.t - b.t), n = s.length;
+  if (n < 8) return null;
+  const diffs = []; for (let i = 1; i < n; i++) diffs.push(s[i].t - s[i - 1].t);
+  const step = median(diffs) || 900e3, per = Math.max(1, Math.round(3600e3 / step));
+  const sm = s.map((p, i) => { let a = 0, c = 0; for (let k = Math.max(0, i - per + 1); k <= i; k++){ a += s[k].v; c++; } return { t: p.t, v: a / c }; });
+  const use = step < 3600e3 && sm.length > per + 4 ? sm.slice(0, -1) : sm;
+  const cut = use[use.length - 1].t - 6 * 3600e3;
+  const bv = use.filter(p => p.t < cut).map(p => p.v);
+  let base = median(bv.length > 12 ? bv : use.map(p => p.v));
+  const zeros = s.filter(p => p.v <= 0).length / n, floor = .0008;
+  const low = zeros > .3 || base < floor;
+  base = Math.max(base, floor);
+  const heat = use.map(p => ({ t: p.t, h: p.v / base }));
+  const now = heat[heat.length - 1].h, prev = heat[Math.max(0, heat.length - 1 - per)].h;
+  let peak = 0, peakT = heat[0].t; heat.forEach(p => { if (p.h > peak){ peak = p.h; peakT = p.t; } });
+  const orders = []; let until = -Infinity; const cool = CONFIG.cooldownHours * 3600e3;
+  for (let i = 0; i < heat.length; i++){
+    const p = heat[i];
+    if (p.h >= ORDER_AT && p.t >= until){
+      let j = i, pk = p.h, pkT = p.t;
+      while (j + 1 < heat.length && heat[j + 1].h >= WATCH_AT && heat[j + 1].t - p.t <= 4 * 3600e3){ j++; if (heat[j].h > pk){ pk = heat[j].h; pkT = heat[j].t; } }
+      orders.push({ t: p.t, peak: pk, peakT: pkT }); until = p.t + cool;
+    }
+  }
+  const hourly = []; for (let i = heat.length - 1; i >= 0; i -= per) hourly.unshift(heat[i]);
+  return { heat, hourly, now, prev, peak, peakT, base, low, orders: low ? [] : orders, updated: s[n - 1].t };
+}
+
+/* ===== Preview data (clearly labelled, used only when the wire is unreachable) ===== */
+function rng(seed){ let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function previewSeries(i){
+  const q = 900e3, end = Math.floor(Date.now() / q) * q, n = 672, day = Math.floor(end / 864e5), R = rng(day * 131 + i * 7919);
+  const base = .04 * (1 + (i % 5) * .35), hot = day % 12, watch = (day + 5) % 12, past = (day + 3) % 12, older = (day + 8) % 12;
+  const out = [];
+  for (let k = 0; k < n; k++){
+    const t = end - (n - 1 - k) * q, hrs = (n - 1 - k) / 4, hod = new Date(t).getUTCHours();
+    let m = 1 + .22 * Math.sin((hod - 9) / 24 * 6.2832) + (R() - .5) * .28;
+    if (i === hot) m *= 1 + 5.6 * Math.exp(-hrs / 2.2) * sstep(0, 1, 6 - hrs);
+    if (i === watch) m *= 1 + 1.45 * Math.exp(-hrs / 5);
+    if (i === past){ const d = hrs - 62; m *= 1 + 10.5 * Math.exp(-Math.abs(d) / (d < 0 ? 1.6 : 4.5)); }
+    if (i === older){ const d = hrs - 128; m *= 1 + 2.9 * Math.exp(-Math.abs(d) / 3); }
+    out.push({ t, v: base * Math.max(.2, m) });
+  }
+  return out;
+}
+
+/* ===== State ===== */
+const state = {
+  mode: "connecting",
+  beats: CONFIG.beats.map((b, i) => Object.assign({}, b, { i, status: "loading", a: null })),
+  hot: null, hotArts: null, hotCn: [],
+  orders: [], fills: [], supply: null,
+  result: null, wireAt: null
+};
+
+/* ===== Monitors (wire) ===== */
+const monEls = state.beats.map(b => {
+  const el = document.createElement("article");
+  el.className = "mon"; el.dataset.t = "loading"; el.tabIndex = 0; el.setAttribute("role", "button");
+  el.setAttribute("aria-label", `Open ${b.label} in the heat check`);
+  el.innerHTML = `<header><span class="ch">CH ${String(b.i + 1).padStart(2, "0")}</span><span class="tier-tag" data-t="quiet">Tuning in</span></header>
+    <b class="name">${esc(b.label)}</b>
+    <div class="heat"><span class="x">×</span><span class="v">–.–</span><span class="dir"></span></div>
+    <svg class="spark" viewBox="0 0 240 58"></svg>
+    <footer><span class="f1">Waiting for the wire</span><span class="f2"></span></footer><span class="hint">Heat check →</span>`;
+  el.addEventListener("click", () => openBeat(b));
+  el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); openBeat(b); } });
+  el.addEventListener("pointerenter", () => { hoverBeat = b; });
+  el.addEventListener("pointerleave", () => { if (hoverBeat === b) hoverBeat = null; });
+  $("monitors").appendChild(el);
+  return el;
+});
+let hoverBeat = null;
+function sparkSVG(pts, W, H){
+  if (!pts || pts.length < 2) return "";
+  const ymax = Math.max(3.6, ...pts.map(p => p.h)) * 1.08, n = pts.length;
+  const X = i => 2 + (W - 8) * i / (n - 1), Y = v => H - 2 - (H - 6) * Math.min(v, ymax) / ymax;
+  let d = ""; pts.forEach((p, i) => d += (i ? "L" : "M") + X(i).toFixed(1) + " " + Y(p.h).toFixed(1));
+  const y1 = Y(1).toFixed(1), y3 = Y(ORDER_AT).toFixed(1), ex = X(n - 1).toFixed(1), ey = Y(pts[n - 1].h).toFixed(1);
+  return `<line class="bl" x1="0" x2="${W}" y1="${y1}" y2="${y1}"/><line class="th" x1="0" x2="${W}" y1="${y3}" y2="${y3}"/><path class="ar" d="${d}L${ex} ${H} L2 ${H}Z"/><path class="ln" d="${d}"/><circle class="ep" cx="${ex}" cy="${ey}" r="2.6"/>`;
+}
+function renderTile(b){
+  const el = monEls[b.i], tag = el.querySelector(".tier-tag");
+  if (b.status !== "ok" || !b.a){
+    el.dataset.t = b.status === "loading" ? "loading" : "quiet";
+    tag.dataset.t = "quiet"; tag.textContent = b.status === "loading" ? "Tuning in" : "No signal";
+    el.querySelector(".f1").textContent = b.status === "loading" ? "Waiting for the wire" : (b.err || "No coverage found");
+    return;
+  }
+  const a = b.a, t = tierOf(a.now);
+  el.dataset.t = t.key; tag.dataset.t = t.key; tag.textContent = a.low ? "Low signal" : t.label;
+  el.querySelector(".v").textContent = fx(a.now);
+  const dir = el.querySelector(".dir"), dd = a.now - a.prev;
+  dir.textContent = Math.abs(dd) < .05 ? "flat 1h" : (dd > 0 ? "▲ " : "▼ ") + Math.abs(dd).toFixed(1) + " 1h"; dir.className = "dir" + (dd > .05 ? " up" : "");
+  el.querySelector(".spark").innerHTML = sparkSVG(a.hourly, 240, 58);
+  el.querySelector(".f1").textContent = `7-day peak ×${fx(a.peak)}`;
+  el.querySelector(".f2").textContent = a.now >= ORDER_AT ? "Order fired" : `Order at ×${ORDER_AT}`;
+}
+
+/* legend + sizes from CONFIG */
+$("legend").innerHTML = TIERS.map((t, i) => `<div><span class="tier-tag" data-t="${t.key}">${t.label}</span><span>${i === 0 ? "under ×" + TIERS[1].at : "×" + t.at + " and up"}</span><em>${t.mult ? solFor(t).toFixed(1) + " SOL" : i === 0 ? "No order" : "On watch"}</em></div>`).join("") + `<p>One order per beat every ${CONFIG.cooldownHours} hours. Daily cap ${CONFIG.dailyCapSol} SOL.</p>`;
+$("sizes").innerHTML = CONFIG.tiers.filter(t => t.mult).map(t => `<div class="size" data-t="${t.key}"><span class="tier-tag" data-t="${t.key}">${t.label} · ×${t.at}</span><b>${solFor(t).toFixed(1)}</b><span>SOL per order · ${t.mult}×</span></div>`).join("");
+$("st-cap").textContent = CONFIG.dailyCapSol + " SOL";
+
+/* ===== Wire boot ===== */
+function setMode(m){
+  state.mode = m;
+  const el = $("onair"); el.dataset.m = m;
+  $("onair-t").textContent = m === "live" ? "Live" : m === "preview" ? "Preview" : "Tuning in";
+  $("wire-preview").hidden = m !== "preview";
+  $("seg-live").textContent = m === "preview" ? "● Preview" : "● Live";
+  $("seg-live").style.color = m === "preview" ? "var(--amber)" : "";
+}
+async function bootWire(){
+  const order = state.beats.slice().sort((a, b) => (cacheGet(qs(tlParams(b.q))) ? 0 : 1) - (cacheGet(qs(tlParams(a.q))) ? 0 : 1));
+  for (const b of order){
+    if (state.mode === "preview") return;
+    try {
+      const j = await enqueue(tlParams(b.q));
+      const s = parseTimeline(j), a = s ? analyze(s) : null;
+      if (a){ b.a = a; b.status = "ok"; if (state.mode !== "live") setMode("live"); }
+      else { b.status = "nosignal"; b.err = "No coverage found"; }
+    } catch (e){
+      if (e.kind === "network" || e.kind === "offline"){ enterPreview(); return; }
+      b.status = "error"; b.err = e.kind === "throttle" ? "Wire busy, retrying soon" : "No signal";
+    }
+    renderTile(b); afterBeat();
+  }
+  wireDone();
+}
+const tlParams = q => ({ query: q, mode: "timelinevol", timespan: "7d", format: "json" });
+const artParams = q => ({ query: q, mode: "artlist", maxrecords: "75", sort: "datedesc", timespan: "1d", format: "json" });
+function enterPreview(){
+  if (state.mode === "preview") return;
+  setMode("preview"); Net.mode = "none";
+  Net.q.splice(0).forEach(j => j.rej({ kind: "offline" }));
+  state.beats.forEach(b => { b.a = analyze(previewSeries(b.i)); b.status = "ok"; renderTile(b); });
+  state.hotCn = cnList(PREVIEW_CN);
+  afterBeat(); wireDone();
+}
+let afterTimer = 0;
+function afterBeat(){
+  const loaded = state.beats.filter(b => b.a);
+  state.hot = loaded.slice().sort((a, b) => b.a.now - a.a.now)[0] || null;
+  state.wireAt = loaded.length ? Math.max(...loaded.map(b => b.a.updated)) : null;
+  $("ws-a").textContent = `Wire ${loaded.length} / ${state.beats.length}`;
+  $("ws-b").textContent = state.wireAt ? `Updated ${hhmm(state.wireAt)} UTC` : "Updated --:-- UTC";
+  clearTimeout(afterTimer);
+  afterTimer = setTimeout(() => { computeOrders(); renderTicker(); renderCallouts(); rebuildChyron(); if (state.hot && (!state.result || (state.result.example && state.result.beat !== state.hot))) showExample(); }, 120);
+}
+async function wireDone(){
+  afterBeat();
+  const hot = state.hot;
+  if (!state.result || state.result.example) showExample();
+  if (!hot || state.mode !== "live") return;
+  try {
+    const j = await enqueue(artParams(hot.q));
+    state.hotArts = (j && j.articles) || [];
+    state.hotCn = countCountries(state.hotArts);
+    renderCallouts(); rebuildChyron(true); renderTicker();
+    if (!state.result || state.result.example) showExample();
+  } catch (e){}
+}
+function countCountries(arts){
+  const m = new Map(); (arts || []).forEach(a => { const c = a.sourcecountry; if (c) m.set(c, (m.get(c) || 0) + 1); });
+  return cnList([...m.entries()].sort((a, b) => b[1] - a[1]));
+}
+function pickHeadlines(arts, k){
+  if (!arts) return [];
+  const seen = new Set(), en = arts.filter(a => a.title && /english/i.test(a.language || "English")), pool = en.length >= k ? en : arts.filter(a => a.title);
+  return pool.filter(a => { const key = a.title.toLowerCase().slice(0, 50); if (seen.has(key)) return false; seen.add(key); return true; }).slice(0, k);
+}
+
+/* ===== Orders + record ===== */
+function computeOrders(){
+  const all = [];
+  state.beats.forEach(b => { if (b.a) b.a.orders.forEach(o => all.push(Object.assign({ beat: b }, o))); });
+  all.forEach(o => { o.tier = tierOf(o.peak); o.sol = solFor(o.tier); });
+  all.sort((a, b) => a.t - b.t);
+  const used = {};
+  all.forEach(o => {
+    if (!LAUNCH || o.t < LAUNCH){ o.status = "backtest"; return; }
+    const day = new Date(o.t).toISOString().slice(0, 10); used[day] = (used[day] || 0) + o.sol;
+    o.status = used[day] > CONFIG.dailyCapSol + 1e-9 ? "queued" : "issued";
+  });
+  state.fills.slice().sort((a, b) => a.t - b.t).forEach(f => { const o = all.find(x => x.status === "issued" && !x.fill && x.t <= f.t); if (o){ o.fill = f; o.status = "filled"; } });
+  state.orders = all.reverse();
+  renderLedger(); renderStats();
+}
+function statusHTML(o){
+  if (o.status === "filled") return `<a class="st st-f" href="https://solscan.io/tx/${esc(o.fill.sig)}" target="_blank" rel="noopener">Filled ↗</a>`;
+  return `<span class="st st-${o.status === "backtest" ? "bt" : o.status === "queued" ? "q" : "is"}">${o.status === "backtest" ? "Backtest" : o.status === "queued" ? "Queued" : "Issued"}</span>`;
+}
+function renderLedger(){
+  const rows = state.orders.slice(0, 12), loaded = state.beats.filter(b => b.a).length;
+  $("lg-rows").innerHTML = rows.length ? rows.map(o => `<div class="lg-row" data-s="${o.status}"><span class="c-t">${dayhm(o.t)}</span><span class="c-b">${esc(o.beat.label)}</span><span class="c-p">×${fx(o.peak)}</span><span class="c-tier"><span class="tier-tag" data-t="${o.tier.key}">${o.tier.label}</span></span><span class="c-s">${o.sol.toFixed(1)} SOL</span><span class="c-st">${statusHTML(o)}</span></div>`).join("")
+    : `<div class="lg-empty">${loaded ? `No beat crossed ×${ORDER_AT} in the last 7 days. The record fills the moment one does.` : "Tuning in to the wire…"}</div>`;
+  const pre = state.mode === "preview" ? "Preview data. " : "";
+  $("lg-note").textContent = pre + (LAUNCH ? "Orders are computed from public GDELT data every 15 minutes. Fills are paid from creator fees and settle the oldest open order first." : "Backtest: the orders the wire would have issued in the last 7 days. Live orders and their fills are recorded from launch.");
+  const fl = $("fills");
+  if (state.fills.length){ fl.hidden = false; fl.innerHTML = `<span class="label" style="align-self:center">Latest fills</span>` + state.fills.slice(0, 6).map(f => `<a class="st st-f" href="https://solscan.io/tx/${esc(f.sig)}" target="_blank" rel="noopener">${fmtInt(f.amount)} burned ↗</a>`).join(""); }
+}
+function renderStats(){
+  const o = state.orders, sol = o.reduce((a, x) => a + x.sol, 0);
+  $("st-orders").textContent = state.beats.some(b => b.a) ? o.length : "—";
+  $("st-orders-s").textContent = o.length ? `largest ×${fx(Math.max(...o.map(x => x.peak)))}` : "none yet";
+  $("st-sol").textContent = state.beats.some(b => b.a) ? sol.toFixed(1) : "—";
+  if (state.supply != null){ const burned = Math.max(0, CONFIG.supply - state.supply); $("st-burned").textContent = fmtInt(burned); $("st-burned-s").textContent = `${(burned / CONFIG.supply * 100).toFixed(3)}% of supply`; }
+}
+
+/* ===== Hero: callouts, chyron, ticker ===== */
+function renderCallouts(){
+  const h = state.hot, loaded = state.beats.filter(b => b.a).length;
+  $("cl-hot").textContent = h ? `${h.label} ×${fx(h.a.now)}` : "Tuning in…";
+  $("cl-wire").textContent = `${loaded} / ${state.beats.length} beats` + (state.wireAt ? ` · ${hhmm(state.wireAt)} UTC` : "");
+  $("cl-cn").textContent = state.mode === "preview" ? `${state.hotCn.length} countries · preview` : state.hotCn.length ? `${state.hotCn.length} countries` : "—";
+  const sol = state.orders.reduce((a, x) => a + x.sol, 0);
+  $("cl-orders").textContent = loaded ? `${state.orders.length} · ${sol.toFixed(1)} SOL` : "—";
+}
+let chyItems = [], chyIx = 0, chyKey = "";
+function rebuildChyron(force){
+  const loaded = state.beats.filter(b => b.a).sort((a, b) => b.a.now - a.a.now);
+  const hotItems = loaded.filter(b => b.a.now >= ORDER_AT), watchItems = loaded.filter(b => b.a.now >= WATCH_AT);
+  const items = hotItems.length ? hotItems.slice(0, 4) : watchItems.length ? watchItems.slice(0, 3).concat(loaded.filter(b => b.a.now < WATCH_AT).slice(0, 1)) : loaded.slice(0, 3);
+  const key = items.map(b => b.i + ":" + fx(b.a.now)).join("|") + (state.hotArts ? "h" : "");
+  if (key === chyKey && !force) return;
+  chyKey = key; chyItems = items; chyIx = 0;
+  if (items.length) showChyron(items[0]);
+}
+function showChyron(b){
+  const c = $("chyron"), a = b.a, t = tierOf(a.now);
+  c.dataset.t = t.key;
+  $("ch-tag").textContent = t.mult ? "Breaking" : t.key === "watch" ? "On watch" : "Now watching";
+  $("ch-beat").textContent = b.label;
+  const x = $("ch-x"); x.textContent = "×" + fx(a.now); x.classList.toggle("hot", a.now >= ORDER_AT);
+  const tg = $("ch-tier"); tg.dataset.t = t.key; tg.textContent = t.label;
+  const sub = $("ch-sub"), hl = b === state.hot ? pickHeadlines(state.hotArts, 1)[0] : null;
+  if (hl){
+    sub.innerHTML = `<span class="ch-src">${esc((hl.domain || "").replace(/^www\./, ""))}</span><a href="${esc(hl.url)}" target="_blank" rel="noopener">${esc(hl.title)}</a>`;
+  } else {
+    const line = t.mult ? `Burn order issued · ${solFor(t).toFixed(1)} SOL · coverage at ${fx(a.now)}× its 7-day normal` : `Coverage at ${fx(a.now)}× its 7-day normal · an order fires at ×${ORDER_AT}`;
+    sub.innerHTML = `<span>${state.mode === "preview" ? "Preview · " : ""}${esc(line)}</span>`;
+  }
+  c.classList.remove("swap"); void c.offsetWidth; c.classList.add("swap");
+}
+setInterval(() => { if (chyItems.length > 1 && !document.hidden){ chyIx = (chyIx + 1) % chyItems.length; showChyron(chyItems[chyIx]); } }, 7000);
+let tickKey = "";
+function renderTicker(){
+  const loaded = state.beats.filter(b => b.a).sort((a, b) => b.a.now - a.a.now);
+  if (!loaded.length) return;
+  const heads = pickHeadlines(state.hotArts, 4);
+  const items = loaded.map(b => { const t = tierOf(b.a.now), up = b.a.now - b.a.prev > .05; return `<span data-t="${t.key}"><i></i><b>${esc(b.label.toUpperCase())}</b>×${fx(b.a.now)}${up ? ' <span class="up">▲</span>' : ""}</span>`; });
+  heads.forEach((h, k) => items.splice(Math.min(items.length, 2 + k * 3), 0, `<span class="hd"><em>${esc((h.domain || "").replace(/^www\./, ""))}</em>${esc(h.title)}</span>`));
+  const html = items.join("");
+  if (html === tickKey) return; tickKey = html;
+  const run = $("tk-run"); run.innerHTML = html + html;
+  requestAnimationFrame(() => { run.style.setProperty("--dur", Math.max(40, run.scrollWidth / 2 / 70) + "s"); });
+  $("ticker").dataset.t = loaded[0].a.now >= ORDER_AT ? "hot" : "quiet";
+  $("tk-tag").textContent = loaded[0].a.now >= ORDER_AT ? "BREAKING" : "WIRE";
+}
+
+/* ===== Heat check ===== */
+function showExample(){
+  const h = state.hot; if (!h) return;
+  state.result = { name: h.label, a: h.a, arts: state.mode === "live" ? state.hotArts : null, cn: state.hotCn, example: true, beat: h };
+  renderResult();
+}
+function openBeat(b){
+  if (!b.a) return;
+  state.result = { name: b.label, a: b.a, arts: b === state.hot ? state.hotArts : null, cn: b === state.hot ? state.hotCn : [], example: false, beat: b, loadingArts: state.mode === "live" && b !== state.hot };
+  renderResult();
+  $("heat").scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
+  if (state.result.loadingArts){
+    const r = state.result;
+    enqueue(artParams(b.q), true).then(j => { if (state.result !== r) return; r.arts = (j && j.articles) || []; r.cn = countCountries(r.arts); r.loadingArts = false; renderResult(); })
+      .catch(() => { if (state.result !== r) return; r.loadingArts = false; r.arts = []; renderResult(); });
+  }
+}
+function buildQuery(s){
+  s = s.replace(/["“”]/g, "").replace(/\s+/g, " ").trim();
+  return /\s/.test(s) ? `"${s}"` : s;
+}
+function heatErr(msg){ const e = $("heat-err"); e.textContent = msg; e.hidden = !msg; }
+async function runHeat(raw){
+  const name = raw.replace(/["“”]/g, "").replace(/\s+/g, " ").trim();
+  heatErr("");
+  if (name.length < 3){ heatErr("Type at least three letters, like a name or a company."); return; }
+  const known = state.beats.find(b => b.label.toLowerCase() === name.toLowerCase() && b.a);
+  if (known){ openBeat(known); return; }
+  if (state.mode === "preview"){ heatErr("This preview can’t reach the live news wire, so heat checks are off here. On the deployed site this pulls real GDELT data."); return; }
+  const q = buildQuery(name), r = { name, a: null, arts: null, cn: [], example: false, loading: true };
+  state.result = r; renderResult();
+  try {
+    const j = await enqueue(tlParams(q), true);
+    if (state.result !== r) return;
+    const s = parseTimeline(j), a = s ? analyze(s) : null;
+    if (!a) throw { kind: "empty" };
+    r.a = a; r.loading = false; r.loadingArts = true; renderResult();
+    try { const ja = await enqueue(artParams(q), true); r.arts = (ja && ja.articles) || []; r.cn = countCountries(r.arts); } catch (e){ r.arts = []; }
+    r.loadingArts = false; if (state.result === r) renderResult();
+  } catch (e){
+    if (state.result !== r) return;
+    r.loading = false; state.result = null; showExample();
+    if (e.kind === "empty") heatErr(`No coverage of “${name}” in the last 7 days. Try another spelling or the full name.`);
+    else if (e.kind === "network" || e.kind === "offline"){ heatErr("Can’t reach the news wire from this browser right now."); enterPreview(); }
+    else if (e.kind === "throttle") heatErr("The wire is busy. Try again in a few seconds.");
+    else if (/short|too common/i.test(e.msg || "")) heatErr("That word is too short or too common for the wire. Try a fuller name, like Federal Reserve.");
+    else heatErr("The wire didn’t answer that one. Try a different word.");
+  }
+}
+$("heat-form").addEventListener("submit", e => { e.preventDefault(); runHeat($("heat-q").value); });
+$("hero-form").addEventListener("submit", e => { e.preventDefault(); const v = $("hero-q").value; if (!v.trim()) { $("hero-q").focus(); return; } $("heat-q").value = v; $("heat").scrollIntoView({ behavior: reduce ? "auto" : "smooth" }); runHeat(v); });
+document.querySelectorAll("[data-try]").forEach(b => b.addEventListener("click", () => {
+  const v = b.dataset.try; $("heat-q").value = v; $("hero-q").value = v;
+  if (b.closest("#hero-form")) $("heat").scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
+  runHeat(v);
+}));
+$("heat-q").addEventListener("input", () => heatErr(""));
+
+function chartSVG(svg, pts, o){
+  const W = o.W, H = o.H, L = 6, R = 40, T = 12, B = 22, n = pts.length;
+  if (n < 2){ svg.innerHTML = ""; return null; }
+  const t0 = pts[0].t, t1 = pts[n - 1].t, ymax = o.ymax || Math.max(4, ...pts.map(p => p.h)) * 1.12;
+  const X = t => L + (W - L - R) * (t - t0) / ((t1 - t0) || 1), Y = v => T + (H - T - B) * (1 - Math.min(v, ymax) / ymax);
+  let g = `<defs><linearGradient id="heatfill-${svg.id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff2e1f" stop-opacity=".42"/><stop offset=".6" stop-color="#ff2e1f" stop-opacity=".08"/><stop offset="1" stop-color="#ff2e1f" stop-opacity="0"/></linearGradient><clipPath id="clip-${svg.id}"><rect x="0" y="0" width="${W}" height="${H}" id="cliprect-${svg.id}"/></clipPath></defs>`;
+  const day = 864e5;
+  for (let d = Math.ceil(t0 / day) * day; d <= t1; d += day){ const x = X(d).toFixed(1); g += `<line class="gv" x1="${x}" x2="${x}" y1="${T}" y2="${H - B}"/><text class="gt" x="${(+x + 4).toFixed(1)}" y="${H - 7}">${DAYS[new Date(d).getUTCDay()]}</text>`; }
+  [1].concat(CONFIG.tiers.map(t => t.at)).forEach(v => { if (v > ymax) return; const y = Y(v).toFixed(1); g += `<line class="gl ${v === 1 ? "base" : "thr"}" data-v="${v}" x1="${L}" x2="${W - R}" y1="${y}" y2="${y}"/><text class="gt" x="${W - R + 6}" y="${(+y + 3.5).toFixed(1)}">×${v}</text>`; });
+  let d = ""; pts.forEach((p, i) => d += (i ? "L" : "M") + X(p.t).toFixed(1) + " " + Y(p.h).toFixed(1));
+  g += `<g clip-path="url(#clip-${svg.id})"><path class="ar" style="fill:url(#heatfill-${svg.id})" d="${d}L${X(t1).toFixed(1)} ${H - B} L${X(t0).toFixed(1)} ${H - B}Z"/><path class="ln" d="${d}"/></g>`;
+  if (o.peak){ let pk = pts[0]; pts.forEach(p => { if (p.h > pk.h) pk = p; }); const px = X(pk.t), py = Y(pk.h); const right = px > (W - R) * .7; g += `<circle class="pk" cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="4"/><text class="pt" text-anchor="${right ? "end" : "start"}" x="${(right ? px - 9 : px + 9).toFixed(1)}" y="${Math.max(T + 10, py + 4).toFixed(1)}">peak ×${fx(pk.h)}</text>`; }
+  if (o.playhead) g += `<circle class="ph" id="ph-${svg.id}" r="5" cx="-20" cy="-20"/>`;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.innerHTML = g;
+  return { X, Y, ymax };
+}
+function renderResult(){
+  const r = state.result, el = $("result");
+  if (!r) return;
+  const a = r.a, live = state.mode === "live";
+  $("rs-label").textContent = r.example ? (state.mode === "preview" ? "Example · preview data" : "Example · hottest beat on the wire") : "Heat check · last 7 days";
+  $("rs-name").textContent = r.name;
+  $("rs-load").hidden = !r.loading && !r.loadingArts;
+  $("rs-load-t").textContent = r.loading ? "In line for the wire · pulling 7 days of coverage…" : "Pulling the latest headlines…";
+  if (!a){
+    el.dataset.t = "quiet"; ["rs-now", "rs-peak", "rs-ptier", "rs-cn"].forEach(id => $(id).textContent = "—");
+    $("rs-tier").dataset.t = "quiet"; $("rs-tier").textContent = "—"; $("rs-chart").innerHTML = ""; $("rs-heads").innerHTML = ""; $("cn-list").innerHTML = "";
+    $("card-btn").disabled = true; $("rs-copy").disabled = true; return;
+  }
+  const t = tierOf(a.now), pt = tierOf(a.peak);
+  el.dataset.t = t.key;
+  $("rs-tier").dataset.t = t.key; $("rs-tier").textContent = "Now · " + t.label;
+  $("rs-now").textContent = "×" + fx(a.now);
+  $("rs-peak").textContent = "×" + fx(a.peak);
+  $("rs-peak-t").textContent = dayhm(a.peakT) + " UTC";
+  $("rs-ptier").textContent = pt.label;
+  $("rs-psize").textContent = pt.mult ? `${solFor(pt).toFixed(1)} SOL order` : "no order";
+  $("rs-cn").textContent = r.cn && r.cn.length ? r.cn.length : (r.loadingArts ? "…" : "—");
+  chartSVG($("rs-chart"), a.hourly, { W: 640, H: 180, peak: true });
+  const hs = pickHeadlines(r.arts, 4);
+  $("rs-heads").innerHTML = hs.length ? hs.map(h => `<li><a href="${esc(h.url)}" target="_blank" rel="noopener"><span class="src">${esc((h.domain || "").replace(/^www\./, ""))}</span><span class="tt">${esc(h.title)}</span><span class="ago">${h.seendate ? ago(gdDate(h.seendate)) : ""}</span></a></li>`).join("")
+    : `<li><span class="empty">${!live ? "Live headlines appear here when the wire connects." : r.loadingArts ? "Pulling the latest headlines…" : "No headlines in the last 24 hours."}</span></li>`;
+  const cn = r.cn || [], max = Math.max(1, ...cn.map(c => c.n));
+  $("cn-list").innerHTML = cn.length ? cn.slice(0, 8).map(c => `<li><span>${esc(c.key)}</span><em>${c.n}${state.mode === "preview" ? "" : ""}</em><i style="--w:${(c.n / max * 100).toFixed(0)}%"></i></li>`).join("") + (state.mode === "preview" ? `<li class="none">Preview distribution</li>` : `<li class="none">Source countries of the latest ${(r.arts || []).length} articles</li>`)
+    : `<li class="none">${r.loadingArts ? "Locating sources…" : "Countries appear with live headlines."}</li>`;
+  $("card-btn").disabled = false; $("rs-copy").disabled = false;
+}
+
+/* ===== Choreography helpers ===== */
+const scenes = [...document.querySelectorAll("[data-scene]")].map(el => ({ el, key: el.dataset.scene }));
+function pinProgress(el){ const r = el.getBoundingClientRect(); return clamp(-r.top / Math.max(1, r.height - innerHeight), 0, 1); }
+function activeScene(){
+  const mid = innerHeight * .5; let s = scenes[0];
+  for (const sc of scenes){ const r = sc.el.getBoundingClientRect(); if (r.top <= mid && r.bottom > mid){ s = sc; break; } if (r.top > mid) break; s = sc; }
+  return s;
+}
+const HH = 6 * .2679492;
+function anchorWorld(el, fit = 2.75){
+  const r = el.getBoundingClientRect(), W = innerWidth, H = innerHeight;
+  const x = ((r.left + r.width / 2) / W * 2 - 1) * (W / H) * HH, y = (1 - (r.top + r.height / 2) / H * 2) * HH;
+  return [x, y, Math.min(r.width, r.height) / H * 2 * HH / fit];
+}
+
+/* ===== How it breaks (pinned) ===== */
+const DEMO = (() => {
+  const R = rng(4242), n = 72, end = Math.floor(Date.now() / 3600e3) * 3600e3, ramp = [1.15, 1.35, 1.7, 2.2, 2.8, 3.5, 4.4, 5.5, 6.7, 7.9, 9.0, 9.8, 10.4], out = [];
+  for (let i = 0; i < n; i++){
+    const t = end - (n - 1 - i) * 3600e3, hod = new Date(t).getUTCHours();
+    let h = 1 + .2 * Math.sin((hod - 10) / 24 * 6.2832) + (R() - .5) * .22;
+    if (i === 30 || i === 31) h += .8;
+    const k = i - (n - ramp.length); if (k >= 0) h = ramp[k];
+    out.push({ t, h: Math.max(.55, h) });
+  }
+  return out;
+})();
+const howChart = chartSVG($("how-chart"), DEMO, { W: 640, H: 170, ymax: 12, playhead: true });
+const stepEls = [...document.querySelectorAll("#steps li")];
+let lastStep = -1, lastHowKey = "";
+function renderHow(p){
+  const nr = (DEMO.length - 14) / (DEMO.length - 1), reveal = p < .28 ? lerp(.45, nr, sstep(.04, .28, p)) : lerp(nr, 1, clamp((p - .28) / .3, 0, 1)), n = DEMO.length, idx = Math.min(n - 1, Math.floor(reveal * (n - 1))), cur = DEMO[idx];
+  const h = cur.h, t = tierOf(h);
+  const cr = document.getElementById("cliprect-how-chart");
+  if (cr && howChart){ const x = howChart.X(cur.t); cr.setAttribute("width", (x + 1).toFixed(1)); const ph = document.getElementById("ph-how-chart"); if (ph){ ph.setAttribute("cx", x.toFixed(1)); ph.setAttribute("cy", howChart.Y(h).toFixed(1)); } }
+  const step = p < .26 ? 0 : p < .58 ? 1 : p < .76 ? 2 : 3;
+  const filled = p >= .84, slam = p >= .76;
+  const key = step + "|" + fx(h) + "|" + filled + "|" + slam;
+  if (key !== lastHowKey){
+    lastHowKey = key;
+    if (step !== lastStep){ lastStep = step; stepEls.forEach((li, i) => { li.classList.toggle("on", i === step); li.classList.toggle("done", i < step); }); }
+    $("ro-heat").textContent = fx(h); $("ro-wrap").classList.toggle("hot", h >= ORDER_AT);
+    const tg = $("ro-tier"); tg.dataset.t = t.key; tg.textContent = t.label;
+    $("sv-heat").textContent = "×" + fx(h);
+    const ot = h >= ORDER_AT ? t : null;
+    $("sv-order").textContent = ot && p >= .58 ? `${ot.label} · ${solFor(ot).toFixed(1)} SOL` : "—";
+    $("sv-burn").textContent = filled ? "Filled · tx posted" : "—";
+    $("ticket").classList.toggle("on", p >= .58);
+    $("tk-tier").textContent = ot ? ot.label : "—"; $("tk-size").textContent = ot ? solFor(ot).toFixed(1) + " SOL" : "—";
+    const st = $("tk-status"); st.textContent = filled ? "Filled" : "Issued"; st.classList.toggle("f", filled);
+    $("slam").classList.toggle("on", slam);
+  }
+  $("how-meter").style.width = (p * 100).toFixed(1) + "%";
+  const k = Math.round(sstep(.3, .6, p) * DEMO_CN.length);
+  const pulses = DEMO_CN.slice(0, k).map((nme, i) => { const ll = countryLL(nme); return ll ? { key: "d" + nme, lat: ll[0], lon: ll[1], w: 1 - i / DEMO_CN.length * .6 } : null; }).filter(Boolean);
+  return { heatU: heatU(h), alert: TCOL[t.key], burn: sstep(.76, .97, p), pulses };
+}
+
+/* ===== WebGL globe ===== */
+const FRAG = `
+precision highp float;
+uniform vec2 uRes; uniform float uTime;
+uniform vec4 uG; uniform vec2 uRot;
+uniform float uHeat; uniform float uBurn; uniform float uRings; uniform float uIntro; uniform float uNR; uniform float uNP;
+uniform vec3 uAlert;
+uniform vec4 uP[16];
+uniform sampler2D uLand;
+#define CAMZ 6.0
+#define TANH 0.2679492
+#define PI 3.14159265
+mat2 rot(float a){ float c=cos(a), s=sin(a); return mat2(c,s,-s,c); }
+float hash(vec2 p){ return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453); }
+float sq(float x){ return x*x; }
+vec3 toObj(vec3 n){ vec3 q=n; q.yz*=rot(uRot.y); q.xz*=rot(uRot.x); return q; }
+vec3 env(vec3 r){
+  vec3 c=mix(vec3(.012,.013,.017),vec3(.06,.064,.075),smoothstep(-.6,.9,r.y));
+  c+=vec3(1.)*.38*exp(-abs(r.y-.05)*28.);
+  c+=vec3(1.,.98,.95)*2.2*smoothstep(.93,.985,dot(r,normalize(vec3(-.55,.6,.58))));
+  c+=vec3(.85,.9,1.)*1.1*smoothstep(.965,.995,dot(r,normalize(vec3(.8,.25,-.2))));
+  c+=uAlert*.9*smoothstep(.95,.995,dot(r,normalize(vec3(.4,-.3,.85))));
+  return c;
+}
+vec4 dots(vec3 q, float pxA){
+  float lat=asin(clamp(q.y,-1.,1.)), lon=atan(q.x,q.z);
+  float dl=PI/uNR;
+  float ri=floor((lat+PI*.5)/dl);
+  float latc=-PI*.5+(ri+.5)*dl;
+  float nd=max(3.,floor(2.*uNR*cos(latc)+.5));
+  float dlo=2.*PI/nd;
+  float ci=floor((lon+PI)/dlo);
+  float lonc=-PI+(ci+.5)*dlo;
+  float d=length(vec2((lon-lonc)*cos(lat),lat-latc));
+  float land=smoothstep(.3,.7,texture2D(uLand,vec2((lonc+PI)/(2.*PI),(PI*.5-latc)/PI)).r);
+  vec3 D=vec3(cos(latc)*sin(lonc),sin(latc),cos(latc)*cos(lonc));
+  float hot=0., wave=0.;
+  for(int i=0;i<16;i++){
+    if(float(i)>=uNP) break;
+    vec4 P=uP[i];
+    if(P.z<.004) continue;
+    vec3 C=vec3(cos(P.x)*sin(P.y),sin(P.x),cos(P.x)*cos(P.y));
+    float a=acos(clamp(dot(D,C),-1.,1.));
+    hot+=P.z*exp(-a*a/.0085);
+    float ph=fract(uTime*.17+P.w);
+    wave+=P.z*exp(-sq((a-.03-ph*.55)/.032))*sq(1.-ph)*1.3;
+  }
+  float r=dl*mix(.15,.34,land)*(1.+.22*min(hot,1.));
+  float cov=1.-smoothstep(r-pxA*.75,r+pxA*.75,d);
+  return vec4(cov,land,min(hot,1.6),min(wave,1.2));
+}
+vec3 bg(vec2 uv, vec3 ro, vec3 rd){
+  vec3 c=vec3(.017,.019,.024)+vec3(.02,.022,.028)*smoothstep(-1.2,1.,uv.y);
+  c+=vec3(.035,.04,.05)*exp(-sq(uv.x*.55)-sq((uv.y-1.3)*1.3));
+  c+=uAlert*(.012+.05*uHeat)*exp(-sq((uv.y+1.2)*1.5)-uv.x*uv.x*.22);
+  if(uG.w>.001){
+    vec3 oc=uG.xyz-ro; float al=dot(oc,rd);
+    float d=length(ro+rd*al-uG.xyz)/uG.w;
+    vec3 hc=mix(vec3(.55,.62,.78),uAlert,clamp(uHeat*1.3,0.,1.));
+    c+=hc*(.15*exp(-max(d-1.,0.)*3.2)+.04*exp(-d*d*.12));
+  }
+  return c;
+}
+vec3 rings(vec3 ro, vec3 rd){
+  float tp=(uG.z-ro.z)/rd.z; vec3 pp=ro+rd*tp;
+  vec2 v=(pp.xy-uG.xy)/uG.w; float r=length(v); float an=atan(v.y,v.x);
+  float px=2.*TANH*CAMZ/uRes.y/uG.w;
+  float L=0., red=0.;
+  L+=(1.-smoothstep(0.,px*1.1,abs(r-1.16)))*.6;
+  float a=an/(2.*PI)*144.; float darc=abs(fract(a+.5)-.5)/144.*2.*PI*r;
+  float major=step(abs(fract(a/6.+.5)-.5)*6.,.5);
+  L+=(1.-smoothstep(0.,px*1.1,darc))*step(1.16,r)*step(r,1.195+major*.045)*(.32+major*.5);
+  float dash=step(.55,fract(an/(2.*PI)*120.+uTime*.015));
+  L+=(1.-smoothstep(0.,px*1.1,abs(r-1.31)))*dash*.4;
+  float da=abs(mod(an-uTime*.22+PI,2.*PI)-PI);
+  red+=(1.-smoothstep(px*.7,px*2.4,abs(r-1.16)))*(1.-smoothstep(.42,.6,da))*(.6+uHeat*1.3);
+  float ma=-uTime*.11; vec2 mk=vec2(cos(ma),sin(ma))*1.31;
+  red+=(1.-smoothstep(px*1.6,px*3.6,length(v-mk)))*1.4;
+  float e=uBurn; float sh=0.;
+  if(e>.001&&e<.999){ float R=1.+e*2.7; sh=exp(-sq((r-R)/(.025+e*.1)))*pow(1.-e,1.4)*1.5; sh+=exp(-sq((r-1.-e*1.5)/(.02+e*.06)))*pow(1.-e,2.)*.7; }
+  return vec3(.82,.85,.9)*L*.5*uRings+vec3(1.,.2,.11)*(red*.6*uRings+sh);
+}
+void main(){
+  vec2 fc=gl_FragCoord.xy, uv=(fc*2.-uRes)/uRes.y;
+  vec3 ro=vec3(0.,0.,CAMZ), rd=normalize(vec3(uv*TANH,-1.));
+  vec3 col=bg(uv,ro,rd);
+  if(uG.w>.001){
+    col+=rings(ro,rd);
+    vec3 oc=ro-uG.xyz; float b=dot(oc,rd); float h=b*b-dot(oc,oc)+uG.w*uG.w;
+    float al=-b; float dist=length(ro+rd*al-uG.xyz)/uG.w;
+    float px=2.*TANH*CAMZ/uRes.y/uG.w;
+    float cov=1.-smoothstep(1.-px*1.2,1.+px*.4,dist);
+    if(cov>.001){
+      float sqh=sqrt(max(h,0.));
+      vec3 p=ro+rd*(h>0.?al-sqh:al), n=normalize(p-uG.xyz);
+      vec3 p2=ro+rd*(h>0.?al+sqh:al), n2=normalize(p2-uG.xyz);
+      float ndv=clamp(dot(n,-rd),0.,1.);
+      vec3 q=toObj(n), q2=toObj(n2);
+      vec4 F=dots(q,px/max(ndv,.16));
+      vec4 Bk=dots(q2,px*1.4);
+      vec3 white=vec3(.93,.95,1.), redC=vec3(1.,.19,.1);
+      vec3 hotC=mix(white,vec3(1.,.72,.26),smoothstep(.12,.42,uHeat));
+      hotC=mix(hotC,vec3(1.,.27,.14),smoothstep(.42,.82,uHeat));
+      float flash=smoothstep(0.,.03,uBurn)*(1.-smoothstep(.03,.42,uBurn));
+      float wt=(1.-q.y)*.5, on=smoothstep(wt-.04,wt+.02,uIntro*1.08);
+      float scan=exp(-sq((wt-uIntro*1.08)/.012))*(1.-step(.999,uIntro));
+      vec3 landC=mix(white,hotC,.25+.55*uHeat);
+      landC=mix(landC,redC,clamp(F.z*1.1+flash,0.,1.));
+      vec3 seaC=mix(vec3(.42,.48,.62)*.34,redC*1.1,clamp(F.w*1.3+flash*.5,0.,1.));
+      vec3 dotC=mix(seaC*(1.+F.w*2.2),landC*(1.+F.z*.85),F.y);
+      float limb=mix(.25,1.,smoothstep(0.,.55,ndv));
+      vec3 R=reflect(rd,n); float fr=pow(1.-ndv,3.);
+      vec3 body=vec3(.011,.013,.018)+env(R)*.05+fr*mix(vec3(.5,.56,.68),uAlert,uHeat*.85)*.34;
+      body+=vec3(1.)*pow(max(dot(R,normalize(vec3(-.5,.62,.6))),0.),220.)*.5;
+      body+=redC*min(F.z,1.)*.14*on;
+      vec3 sc=body+mix(vec3(.62,.67,.78),redC,clamp(Bk.z,0.,1.))*Bk.x*Bk.y*.085*(1.-F.x)*on;
+      sc+=dotC*F.x*limb*on;
+      sc+=vec3(.9,.95,1.)*scan*.55;
+      col=mix(col,sc,cov);
+    }
+  }
+  col*=1.-.26*dot(uv*.5,uv*.5);
+  col+=(hash(fc+fract(uTime*7.))-.5)/150.;
+  gl_FragColor=vec4(col,1.);
+}`;
+
+function landData(){
+  const bin = atob(LAND_B64), W = 360, H = 180, out = new Uint8Array(W * H);
+  for (let i = 0; i < W * H; i++) out[i] = ((bin.charCodeAt(i >> 3) >> (7 - (i & 7))) & 1) * 255;
+  return out;
+}
+const LAND = landData();
+class Studio {
+  constructor(canvas, keep){
+    const gl = canvas.getContext("webgl", { antialias: false, alpha: false, depth: false, stencil: false, preserveDrawingBuffer: !!keep, powerPreference: "high-performance" });
+    if (!gl) throw new Error("WebGL unavailable");
+    this.gl = gl; this.canvas = canvas;
+    const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; };
+    const p = gl.createProgram();
+    gl.attachShader(p, sh(gl.VERTEX_SHADER, "attribute vec2 aP; void main(){ gl_Position=vec4(aP,0.,1.); }"));
+    gl.attachShader(p, sh(gl.FRAGMENT_SHADER, FRAG));
+    gl.linkProgram(p); if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+    gl.useProgram(p);
+    const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(p, "aP"); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    this.u = {}; ["uRes", "uTime", "uG", "uRot", "uHeat", "uBurn", "uRings", "uIntro", "uNR", "uNP", "uAlert", "uP", "uLand"].forEach(n => this.u[n] = gl.getUniformLocation(p, n));
+    const tex = gl.createTexture(); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.LUMINANCE, 360, 180, 0, gl.LUMINANCE, gl.UNSIGNED_BYTE, LAND);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.uniform1i(this.u.uLand, 0);
+  }
+  draw(S){
+    const gl = this.gl, u = this.u, w = this.canvas.width, h = this.canvas.height;
+    gl.viewport(0, 0, w, h);
+    gl.uniform2f(u.uRes, w, h); gl.uniform1f(u.uTime, S.time);
+    gl.uniform4fv(u.uG, S.G); gl.uniform2fv(u.uRot, S.rot);
+    gl.uniform1f(u.uHeat, S.heat); gl.uniform1f(u.uBurn, S.burn); gl.uniform1f(u.uRings, S.rings); gl.uniform1f(u.uIntro, S.intro);
+    gl.uniform1f(u.uNR, S.nr); gl.uniform1f(u.uNP, S.np); gl.uniform3fv(u.uAlert, S.alert); gl.uniform4fv(u.uP, S.P);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+}
+const nrFor = rpx => rpx > 230 ? 80 : rpx > 150 ? 64 : rpx > 100 ? 50 : rpx > 62 ? 38 : 28;
+
+/* pulses: 16 slots that cross-fade between sets */
+const SLOTS = Array.from({ length: 16 }, (_, i) => ({ key: "", lat: 0, lon: 0, s: 0, w: 0, seed: (i * .618) % 1 }));
+function syncPulses(list, gain, dt){
+  const want = new Map(list.map(x => [x.key, x]));
+  SLOTS.forEach(s => { if (s.key && want.has(s.key)){ s.w = want.get(s.key).w * gain; want.delete(s.key); } else s.w = 0; });
+  for (const x of want.values()){ const s = SLOTS.find(z => z.w === 0 && z.s < .02); if (!s) break; s.key = x.key; s.lat = x.lat; s.lon = x.lon; s.w = x.w * gain; s.s = 0; }
+  const k = 1 - Math.exp(-dt * 2.4);
+  SLOTS.forEach(s => { s.s = lerp(s.s, s.w, k); if (s.w === 0 && s.s < .02){ s.s = 0; s.key = ""; } });
+}
+function pulseArray(slots){ const a = new Float32Array(64); slots.forEach((s, i) => { a[i * 4] = s.lat; a[i * 4 + 1] = s.lon; a[i * 4 + 2] = s.s; a[i * 4 + 3] = s.seed; }); return a; }
+
+/* snapshots for cards and og */
+let snapStudio = null;
+function snapshot(w, h, o){
+  if (!snapStudio) return null;
+  const c = snapStudio.canvas; c.width = w; c.height = h;
+  const list = o.pulses || [], P = new Float32Array(64);
+  list.slice(0, 16).forEach((x, i) => { P[i * 4] = x.lat; P[i * 4 + 1] = x.lon; P[i * 4 + 2] = x.w; P[i * 4 + 3] = (i * .618) % 1; });
+  const r = o.r || .95, rpx = r / HH * h / 2;
+  snapStudio.draw({ time: o.time ?? 2.3, G: [o.x || 0, o.y || 0, 0, r], rot: [o.spin ?? -.35, .34], heat: o.heat || 0, burn: 0, rings: o.rings ?? 1, intro: 1, nr: nrFor(rpx), np: list.length, alert: o.alert || TCOL.quiet, P });
+  return c;
+}
+
+/* ===== Break Card ===== */
+const DISP = () => getComputedStyle(document.documentElement).getPropertyValue("--display");
+const MONO = () => getComputedStyle(document.documentElement).getPropertyValue("--mono");
+const TEXTF = () => getComputedStyle(document.documentElement).getPropertyValue("--text");
+async function makeCard(){
+  const r = state.result; if (!r || !r.a) return null;
+  try { await document.fonts.ready; } catch (e){}
+  const a = r.a, t = tierOf(a.now), pt = tierOf(a.peak), hot = a.now >= ORDER_AT, W = 1200, H = 675;
+  const cv = document.createElement("canvas"); cv.width = W; cv.height = H; const x = cv.getContext("2d");
+  x.fillStyle = "#07080a"; x.fillRect(0, 0, W, H);
+  const snap = snapshot(860, 860, { r: 1.02, heat: heatU(a.now), alert: TCOL[t.key], pulses: (r.cn && r.cn.length ? r.cn : cnList(PREVIEW_CN)), rings: 1 });
+  if (snap) x.drawImage(snap, 470, -70, 860, 860);
+  let g = x.createLinearGradient(0, 0, W, 0); g.addColorStop(0, "rgba(7,8,10,.96)"); g.addColorStop(.42, "rgba(7,8,10,.55)"); g.addColorStop(.7, "rgba(7,8,10,0)"); x.fillStyle = g; x.fillRect(0, 0, W, H);
+  g = x.createLinearGradient(0, H * .62, 0, H); g.addColorStop(0, "rgba(7,8,10,0)"); g.addColorStop(1, "rgba(7,8,10,.9)"); x.fillStyle = g; x.fillRect(0, H * .55, W, H * .45);
+  const D = DISP(), M = MONO(), T = TEXTF();
+  x.textBaseline = "alphabetic";
+  // bug
+  x.fillStyle = "#ff2e1f"; x.fillRect(56, 52, 40, 40);
+  x.fillStyle = "#fff"; x.beginPath(); x.arc(68, 64, 4, 0, 7); x.fill(); x.fillRect(62, 74, 28, 6); x.globalAlpha = .62; x.fillRect(62, 83, 18, 4); x.globalAlpha = 1;
+  x.font = `800 36px ${D}`; x.fillStyle = "#f1f2ef"; x.fillText("BREAKING", 110, 86);
+  x.font = `400 15px ${M}`; x.fillStyle = "rgba(241,242,239,.6)"; x.fillText(`${dayhm(Date.now()).toUpperCase()} UTC · ${r.example ? "ON THE WIRE" : "HEAT CHECK"}`, 112, 112);
+  // lower third
+  const y0 = 300, tag = hot ? "BREAKING" : t.key === "watch" ? "ON WATCH" : "HEAT CHECK";
+  x.font = `900 46px ${D}`; const tw = x.measureText(tag).width + 48;
+  x.fillStyle = hot ? "#ff2e1f" : t.key === "watch" ? "#ffb41f" : "#f1f2ef"; x.fillRect(56, y0, tw, 96);
+  x.fillStyle = hot ? "#fff" : "#090a0c"; x.fillText(tag, 80, y0 + 64);
+  const bx = 56 + tw, bw = 1060 - tw;
+  x.fillStyle = "rgba(241,242,239,.97)"; x.fillRect(bx, y0, bw, 62);
+  x.font = `800 48px ${D}`; x.fillStyle = "#090a0c";
+  let nm = r.name.toUpperCase(); while (x.measureText(nm).width > bw - 210 && nm.length > 4) nm = nm.slice(0, -2) + "…";
+  x.fillText(nm, bx + 22, y0 + 47);
+  x.textAlign = "right"; x.fillStyle = hot ? "#ff2e1f" : "#5d6168"; x.fillText("×" + fx(a.now), bx + bw - 22, y0 + 47); x.textAlign = "left";
+  x.fillStyle = "rgba(13,15,19,.96)"; x.fillRect(bx, y0 + 62, bw, 34);
+  x.font = `400 15px ${M}`; x.fillStyle = "rgba(241,242,239,.78)";
+  x.fillText(`NOW ×${fx(a.now)} VS ITS 7-DAY NORMAL  ·  7-DAY PEAK ×${fx(a.peak)} (${pt.label.toUpperCase()})${pt.mult ? "  ·  " + solFor(pt).toFixed(1) + " SOL ORDER" : ""}`, bx + 22, y0 + 85);
+  // sparkline
+  const pts = a.hourly, n = pts.length, sx = 56, sy = 440, sw = 640, shh = 120, ym = Math.max(4, a.peak * 1.1);
+  const X = i => sx + sw * i / (n - 1), Y = v => sy + shh - shh * Math.min(v, ym) / ym;
+  x.strokeStyle = "rgba(241,242,239,.18)"; x.setLineDash([3, 5]); x.lineWidth = 1;
+  x.beginPath(); x.moveTo(sx, Y(1)); x.lineTo(sx + sw, Y(1)); x.stroke();
+  x.strokeStyle = "rgba(255,46,31,.5)"; x.beginPath(); x.moveTo(sx, Y(ORDER_AT)); x.lineTo(sx + sw, Y(ORDER_AT)); x.stroke(); x.setLineDash([]);
+  x.font = `400 13px ${M}`; x.fillStyle = "rgba(241,242,239,.5)"; x.fillText("×1", sx + sw + 10, Y(1) + 4); x.fillStyle = "rgba(255,46,31,.8)"; x.fillText("×" + ORDER_AT, sx + sw + 10, Y(ORDER_AT) + 4);
+  const ag = x.createLinearGradient(0, sy, 0, sy + shh); ag.addColorStop(0, "rgba(255,46,31,.4)"); ag.addColorStop(1, "rgba(255,46,31,0)");
+  x.beginPath(); pts.forEach((p, i) => i ? x.lineTo(X(i), Y(p.h)) : x.moveTo(X(i), Y(p.h))); x.lineTo(X(n - 1), sy + shh); x.lineTo(sx, sy + shh); x.closePath(); x.fillStyle = ag; x.fill();
+  x.beginPath(); pts.forEach((p, i) => i ? x.lineTo(X(i), Y(p.h)) : x.moveTo(X(i), Y(p.h))); x.strokeStyle = "#f1f2ef"; x.lineWidth = 2.2; x.stroke();
+  let pi = 0; pts.forEach((p, i) => { if (p.h > pts[pi].h) pi = i; });
+  x.fillStyle = "#ff2e1f"; x.beginPath(); x.arc(X(pi), Y(pts[pi].h), 6, 0, 7); x.fill();
+  x.font = `400 13px ${M}`; x.fillStyle = "rgba(241,242,239,.45)"; x.fillText("LAST 7 DAYS · SHARE OF WORLD NEWS COVERAGE", sx, sy + shh + 26);
+  // footer
+  x.fillStyle = "rgba(241,242,239,.12)"; x.fillRect(56, H - 62, W - 112, 1);
+  x.font = `400 15px ${M}`; x.fillStyle = "rgba(241,242,239,.7)"; x.fillText("$BREAKING · WHEN IT HITS THE NEWS, IT BURNS", 56, H - 30);
+  x.textAlign = "right"; x.fillStyle = "rgba(241,242,239,.45)"; x.fillText((CONFIG.site ? CONFIG.site.toUpperCase() + " · " : "") + "DATA: GDELT" + (state.mode === "preview" ? " · PREVIEW" : ""), W - 56, H - 30); x.textAlign = "left";
+  return cv.toDataURL("image/png");
+}
+function cardText(){
+  const r = state.result; if (!r || !r.a) return "";
+  const a = r.a, pt = tierOf(a.peak);
+  return `BREAKING: ${r.name} is at ×${fx(a.now)} its normal share of world news. 7-day peak ×${fx(a.peak)} (${pt.label}).\n\nWhen it hits the news, it burns. $BREAKING` + (CONFIG.site ? `\n${CONFIG.site}` : "");
+}
+if (window.self !== window.top) $("card-dl").hidden = true;
+$("card-btn").addEventListener("click", async () => {
+  const url = await makeCard(); if (!url) return;
+  $("card-img").src = url; $("card-dl").href = url; $("card-dl").download = `breaking-${state.result.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 30)}.png`;
+  $("modal").hidden = false; $("modal-close").focus();
+});
+$("modal-close").addEventListener("click", () => { $("modal").hidden = true; $("card-btn").focus(); });
+$("modal").addEventListener("click", e => { if (e.target === $("modal")) $("modal").hidden = true; });
+addEventListener("keydown", e => { if (e.key === "Escape") $("modal").hidden = true; });
+function copyText(text, btn, fallbackEl){
+  const orig = btn.dataset.label || (btn.dataset.label = btn.textContent);
+  const done = () => { btn.textContent = "Copied"; btn.classList.add("copy-ok"); setTimeout(() => { btn.textContent = orig; btn.classList.remove("copy-ok"); }, 1600); };
+  const select = () => { if (!fallbackEl) return; const rg = document.createRange(); rg.selectNodeContents(fallbackEl); const s = getSelection(); s.removeAllRanges(); s.addRange(rg); btn.textContent = "Selected"; setTimeout(() => btn.textContent = orig, 2000); };
+  try { navigator.clipboard.writeText(text).then(done, select); } catch (e){ select(); }
+}
+$("card-copy").addEventListener("click", e => copyText(cardText(), e.currentTarget, $("rs-name")));
+$("rs-copy").addEventListener("click", e => copyText(cardText(), e.currentTarget, $("rs-name")));
+
+/* ===== Config wiring ===== */
+(function wire(){
+  const pumpUrl = TOKEN_ADDR ? `https://pump.fun/coin/${TOKEN_ADDR}` : "https://pump.fun";
+  ["buy-nav", "buy-hero", "buy-token", "buy-foot"].forEach(id => $(id).href = pumpUrl);
+  ["ca-hero", "ca-token", "ca-foot"].forEach(id => {
+    const box = $(id), v = box.querySelector(".v"), b = box.querySelector("button");
+    if (TOKEN_ADDR){ v.textContent = TOKEN_ADDR; v.classList.add("has"); b.hidden = false; b.addEventListener("click", () => copyText(TOKEN_ADDR, b, v)); }
+  });
+  const add = (wrap, href, label) => { const a = document.createElement("a"); a.className = "btn"; a.href = href; a.target = "_blank"; a.rel = "noopener"; a.textContent = label; $(wrap).appendChild(a); };
+  if (CONFIG.dexscreener) add("token-links", CONFIG.dexscreener, "DexScreener ↗");
+  if (CONFIG.burnWallet) add("token-links", `https://solscan.io/account/${CONFIG.burnWallet}`, "Burn wallet ↗");
+  if (CONFIG.x){ add("token-links", CONFIG.x, "X ↗"); add("foot-links", CONFIG.x, "Follow on X ↗"); }
+  const total = CONFIG.fees.reduce((a, f) => a + f.cents, 0) || 1;
+  const sw = ["var(--red)", "rgba(241,242,239,.5)", "rgba(241,242,239,.24)", "rgba(241,242,239,.36)"];
+  $("stack").innerHTML = CONFIG.fees.map((f, i) => `<i style="flex:${f.cents};background:${sw[i % sw.length]}"></i>`).join("");
+  $("fee-rows").innerHTML = CONFIG.fees.map((f, i) => `<div><span class="sw" style="background:${sw[i % sw.length]}"></span><span><b>${esc(f.label)}</b><span>${esc(f.note)}</span></span><em>${Math.round(f.cents / total * 100)}¢</em></div>`).join("");
+})();
+
+/* ===== Solana: supply and fills (public RPC, no key) ===== */
+async function rpc(method, params){
+  const r = await fetch(CONFIG.rpc, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ jsonrpc: "2.0", id: 1, method, params }) });
+  const j = await r.json(); if (j.error) throw j.error; return j.result;
+}
+async function bootChain(){
+  if (!TOKEN_ADDR) return;
+  try { const s = await rpc("getTokenSupply", [TOKEN_ADDR]); state.supply = +s.value.uiAmountString; renderStats(); } catch (e){}
+  if (!CONFIG.burnWallet) return;
+  try {
+    const sigs = await rpc("getSignaturesForAddress", [CONFIG.burnWallet, { limit: 30 }]), fills = [];
+    for (const s of sigs){
+      if (s.err) continue;
+      await sleep(250);
+      try {
+        const tx = await rpc("getTransaction", [s.signature, { encoding: "jsonParsed", maxSupportedTransactionVersion: 0, commitment: "confirmed" }]);
+        const ins = ((tx && tx.transaction && tx.transaction.message && tx.transaction.message.instructions) || []).slice();
+        ((tx && tx.meta && tx.meta.innerInstructions) || []).forEach(g => ins.push(...g.instructions));
+        let amt = 0;
+        ins.forEach(i => { const p = i.parsed; if (p && (p.type === "burn" || p.type === "burnChecked") && p.info && p.info.mint === TOKEN_ADDR) amt += p.info.tokenAmount ? +p.info.tokenAmount.uiAmountString : +p.info.amount / 1e6; });
+        if (amt > 0) fills.push({ sig: s.signature, t: (s.blockTime || tx.blockTime) * 1000, amount: amt });
+      } catch (e){}
+    }
+    state.fills = fills; computeOrders();
+  } catch (e){}
+}
+
+/* ===== Header, clocks ===== */
+const topEl = $("topbar");
+addEventListener("scroll", () => topEl.classList.toggle("scrolled", scrollY > 30), { passive: true });
+const tcEls = [...document.querySelectorAll("[data-tc]")];
+function clocks(){
+  const d = new Date(), t = d.toISOString().slice(11, 19), ff = String(Math.floor(d.getUTCMilliseconds() / 40)).padStart(2, "0");
+  $("clock").textContent = t + " UTC"; $("ch-time").textContent = t.slice(0, 5); $("tk-lamp-t").textContent = t.slice(0, 5) + " UTC";
+  tcEls.forEach(e => e.textContent = t + ":" + ff);
+}
+setInterval(clocks, 120); clocks();
+
+/* ===== Choreography ===== */
+let introT = reduce ? 1 : 0, sceneKey = "", sceneSwitch = 0;
+const G = { pos: [0, -2, 0], s: 0 };
+let heatNow = 0, alertNow = TCOL.quiet.slice(), ringsNow = 0, burnNow = 0;
+function hotPulses(){ return state.hotCn.length ? state.hotCn : []; }
+function target(){
+  const sc = activeScene(); if (sc.key !== sceneKey){ sceneKey = sc.key; sceneSwitch = performance.now(); }
+  const h = state.hot, hh = h ? h.a.now : 1;
+  const T = { A: null, heat: heatU(hh), alert: TCOL[tierOf(hh).key], rings: 1, burn: 0, pulses: hotPulses(), gain: 1 };
+  switch (sc.key){
+    case "hero": T.A = anchorWorld($("a-hero")); break;
+    case "wire": T.A = anchorWorld($("a-wire")); T.rings = .6; if (hoverBeat && hoverBeat.a){ T.heat = heatU(hoverBeat.a.now); T.alert = TCOL[tierOf(hoverBeat.a.now).key]; T.gain = hoverBeat === h ? 1 : .35; } break;
+    case "how": { const st = renderHow(pinProgress(sc.el)); T.A = anchorWorld($("a-how")); Object.assign(T, { heat: st.heatU, alert: st.alert, burn: st.burn, pulses: st.pulses, rings: .85 }); break; }
+    case "heat": { T.A = anchorWorld($("a-heat")); const r = state.result; if (r && r.a){ T.heat = heatU(r.a.now); T.alert = TCOL[tierOf(r.a.now).key]; T.pulses = r.cn || []; } T.rings = .75; break; }
+    case "record": T.A = anchorWorld($("a-rec")); T.heat = Math.min(T.heat, .3); T.rings = .55; T.gain = .7; break;
+    case "token": T.A = anchorWorld($("a-tok")); T.heat = .08; T.alert = TCOL.quiet; T.gain = .5; break;
+    case "end": T.A = anchorWorld($("a-end")); T.heat = .08; T.alert = TCOL.quiet; T.gain = .5; break;
+    default: break;
+  }
+  return T;
+}
+
+/* ===== Loop ===== */
+let studio = null, scale = innerWidth < 760 ? .6 : .75, frameMs = 16, lastAdj = 0, calloutsOn = false;
+const S = { time: 0, G: [0, 0, 0, 0], rot: [0, .34], heat: 0, burn: 0, rings: 0, intro: 0, nr: 64, np: 16, alert: TCOL.quiet, P: new Float32Array(64) };
+let mx = 0, my = 0, tx = 0, ty = 0;
+addEventListener("pointermove", e => { mx = e.clientX / innerWidth - .5; my = e.clientY / innerHeight - .5; }, { passive: true });
+function resize(){ if (!studio) return; const c = studio.canvas; c.width = Math.max(2, Math.round(innerWidth * scale)); c.height = Math.max(2, Math.round(innerHeight * scale)); }
+addEventListener("resize", resize);
+const t0 = performance.now(); let last = t0;
+function frame(now){
+  requestAnimationFrame(frame);
+  if (document.hidden){ last = now; return; }
+  const dt = Math.min(.05, (now - last) / 1000); last = now;
+  frameMs = frameMs * .92 + (dt * 1000) * .08;
+  if (now - lastAdj > 1200 && now - t0 > 2500){
+    lastAdj = now;
+    const ns = frameMs > 24 ? scale - .08 : frameMs < 14 ? scale + .05 : scale, cl = clamp(ns, .4, innerWidth < 760 ? .85 : 1);
+    if (Math.abs(cl - scale) > .01){ scale = cl; resize(); }
+  }
+  if (introT < 1) introT = clamp((now - t0 - 500) / 2400, 0, 1);
+  const T = target();
+  const since = (now - sceneSwitch) / 1000, rate = reduce ? 1e3 : lerp(3.2, 11, clamp(since / 1.1, 0, 1)), k = 1 - Math.exp(-dt * rate);
+  const go = T.A || [G.pos[0], G.pos[1] - .5, 0];
+  const sA = T.A ? T.A[2] * (sceneKey === "hero" ? lerp(.82, 1, ease(introT)) : 1) : 0;
+  G.pos[0] = lerp(G.pos[0], go[0], k); G.pos[1] = lerp(G.pos[1], go[1], k);
+  G.s = lerp(G.s, sA, 1 - Math.exp(-dt * (reduce ? 1e3 : 6)));
+  if (G.s < .004 && (!T.A || T.A[2] < 1e-4)) G.s = 0;
+  const kk = 1 - Math.exp(-dt * 3);
+  heatNow = lerp(heatNow, T.heat, sceneKey === "how" ? 1 : kk);
+  alertNow = alertNow.map((v, i) => lerp(v, T.alert[i], kk));
+  ringsNow = lerp(ringsNow, T.rings * (sceneKey === "hero" ? sstep(.7, 1, introT) : 1), 1 - Math.exp(-dt * 4));
+  burnNow = sceneKey === "how" ? T.burn : lerp(burnNow, 0, kk);
+  syncPulses(T.pulses, T.gain * (sceneKey === "hero" ? sstep(.55, 1, introT) : 1), dt);
+  tx = lerp(tx, mx, 1 - Math.exp(-dt * 3)); ty = lerp(ty, my, 1 - Math.exp(-dt * 3));
+  const time = (now - t0) / 1000;
+  const spin = reduce ? -.35 : -.35 + Math.sin(time * .045) * 1.75 + scrollY * .00035 + tx * .4;
+  S.time = reduce ? 2.3 : time;
+  S.G = [G.pos[0], G.pos[1], 0, G.s];
+  S.rot = [spin, .34 + (reduce ? 0 : ty * .18)];
+  S.heat = heatNow; S.burn = burnNow; S.rings = ringsNow; S.intro = reduce ? 1 : introT; S.alert = alertNow;
+  S.nr = nrFor(G.s / HH * innerHeight / 2); S.np = 16; S.P = pulseArray(SLOTS);
+  studio.draw(S);
+  if (introT >= .9 && !calloutsOn){ calloutsOn = true; document.querySelectorAll(".cl").forEach((c, i) => setTimeout(() => c.classList.remove("dim"), i * 140)); }
+}
+
+/* ===== og image (used by the build) ===== */
+window.__og = () => { const c = snapshot(1200, 630, { r: 1.05, heat: .55, alert: TCOL.bulletin, pulses: cnList(PREVIEW_CN), rings: 1, spin: -.3 }); return c ? c.toDataURL("image/png") : null; };
+window.__state = state;
+
+/* ===== Boot ===== */
+const stg = $("stinger");
+if (reduce) stg.remove(); else setTimeout(() => stg.remove(), 1200);
+try {
+  studio = new Studio($("stage"));
+  try { snapStudio = new Studio(document.createElement("canvas"), true); } catch (e){ snapStudio = null; }
+  resize();
+  requestAnimationFrame(frame);
+} catch (err){
+  document.body.classList.add("no-gl"); $("stage").hidden = true;
+  document.querySelectorAll(".cl").forEach(c => c.classList.remove("dim"));
+  window.__glError = String(err && err.message || err);
+  setInterval(() => { const sc = activeScene(); if (sc.key === "how") renderHow(pinProgress(sc.el)); }, 100);
+}
+renderHow(0);
+bootWire();
+bootChain();
+setInterval(() => { if (state.mode === "live" && !document.hidden){ bootWire(); } }, 15 * 60e3);
+</script>
+
+</body>
+</html>
